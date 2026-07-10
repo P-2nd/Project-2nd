@@ -17,7 +17,7 @@ main
 ├── LightGBM-KSY
 └── CatBoost-LHJ
 ```
-### 커밋 내용 규칙: 모델명 - 내용
+### 커밋 내용 규칙: 모델명 - 내용 (커밋 내용은 무조건 작성해주시기 바랍니다.)
 ```text
 * 'RandomForest - 모델 생성'
 * 'XGBoost - 모델 하이퍼파라미터 수정'

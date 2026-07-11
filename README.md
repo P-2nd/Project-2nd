@@ -11,42 +11,208 @@
 5. 설치 및 실행 방법
 6. 데이터 구성
 7. 데이터 전처리 (EDA.md)
-8. 모델 학습
+8. 모델 목록 및 학습
 9. 평가 지표
 10. 결과 (RESULT.md)
 11. Git 협업 규칙
 12. 파일명 규칙
 13. 향후 개선 사항
-14. 참고 자료
+14. 회고
 
 ---------------------------------------
 
+## 1. 프로젝트 개요
+* **🎡프로젝트 명**
+	: 
+    
+* **📃프로젝트 소개**
+	: 
+    
+
+* **🎯프로젝트 목표**
+    - 데이터 정제 및 분석
+    - 머신러닝 모델 선택
+    - 결과 확인 및 분석
+
+----
+
+## 2. 팀 소개 - 팀
+* **🧑‍🔬 팀명:** **버 -** 이유
+* **👥 팀원:** 
+* **🔗 멤버 개인 깃허브 계정 연동**<br>
+	- 오호민: necknam (gom532454@gmail.com) <br>
+	- 오호민: necknam (gom532454@gmail.com)<br>
+	- 오호민: necknam (gom532454@gmail.com)<br>
+	- 오호민: necknam (gom532454@gmail.com)<br>
+	- 오호민: necknam (gom532454@gmail.com)
+
+---
+## 3. 프로젝트 구조
+```text
+Project_2/
+│
+├── models/
+│   ├── ML/
+│   └── preprocessing/
+│                 ├── model.py
+│                 ├── model.py
+│                 ├── model.py
+│                 └── model.py
+│   └── preprocessing/
+│                 ├── data_explorer.py       
+│                 │   # 데이터 확인 및 분석
+│                 ├── data_clean.py          
+│                 │   # 데이터 정제 (결측치, 이상치 처리) 후 분석
+│                 └── data_preprocessor.py   
+│                     # 인코딩 및 스케일링 (전처리 핵심)
+├── config/
+├── data/
+│   ├── eval/
+│   ├── plots/
+│   ├── churn.csv
+│   ├── churn_preprocessed.csv
+│   ├── churn_100.csv
+│   ├── churn_60.csv
+│   └── churn_30.csv
+├── images/
+├── tests/
+│
+├── README.md
+├── EDA.md
+├── RESULT.md
+├── requirements.txt
+├── .gitignore
+└── main.py
+```
+---
+## 4. 개발 환경
+
+| 항목 | 버전 |
+|------|------|
+| Python | |
+| pandas | |
+| numpy | |
+| scikit-learn | |
+| matplotlib | |
+| seaborn | |
+| pyarrow | |
+----------
+
+## 5. 설치 및 실행 방법
+
+### 필요 라이브러리 설치
+- pip install -r requirements.txt
+
+### 결과 확인
+- 평가 결과(JSON): data/eval/
+- ROC Curve 및 Confusion Matrix: data/plots/
+- 모델 성능 비교: RESULT.md
 
 
+---
+6. ## 데이터 구성
+
+| 파일명 | 설명 |
+|--------|------|
+| churn.csv | 원본 데이터 |
+| churn_preprocessed.csv | 전처리 및 인코딩 완료 데이터 |
+| churn_100.csv | 전체 데이터 |
+| churn_60.csv | 60% 데이터 |
+| churn_30.csv | 30% 데이터 |
+
+---------------------
+
+7. ## 데이터 전처리
+
+- 결측치 처리
+- 중복 데이터 제거
+- 이상치 처리
+- 컬럼 삭제
+- 인코딩
+- 스케일링
+- Feature Selection
+- 데이터 분할
+
+> 자세한 내용은 `EDA.md`를 참고하세요.
+
+```text
+정제(Cleaning) → 인코딩(Encoding) → 스케일링(Scaling) 
+
+그림 추가 예정
+
+'https://app.diagrams.net/'
+
+추천 설정
+파일 형식: .drawio (원본 저장)
+README 삽입용: .svg (가장 추천) 또는 .png
+저장 위치: ./images/
+
+README에서는 이렇게 넣으면 됩니다.
+
+## 데이터 전처리
+
+<p align="center">
+  <img src="./images/preprocessing_flow.svg" width="800">
+</p>
+
+팁
+SVG로 저장하면 확대해도 깨지지 않습니다.
+images/ 폴더를 따로 만들어 관리하면 README와 EDA.md에서 같은 이미지를 재사용할 수 있습니다.
+도형 색상은 너무 화려하게 하기보다 흰색 배경 + 검은 테두리 + 파란색 강조 정도가 GitHub에서 가장 보기 좋습니다.
+
+프로젝트 규모를 보면 전처리 → 모델 학습 → 평가까지 여러 다이어그램이 생길 가능성이 있으니, 
+처음부터 images/ 폴더를 만들어 관리하는 것을 추천합니다.
+```
+
+---------------
+
+## 8. 모델 목록 및 학습
+
+### 모델 학목록
+
+| 모델 | 담당자 |
+|------|--------|
+| RandomForest | |
+| XGBoost | |
+| LightGBM | |
+| CatBoost | |
+
+### 모델 학습
+
+| 항목 | 값 |
+|------|----|
+| Train | 80% |
+| Test | 20% |
+| Random State | |
+| Cross Validation | |
+
+------------
+
+## 9. 평가 지표
+
+| Metric | 설명 |
+|--------|------|
+| Accuracy | 정확도 |
+| Precision | 정밀도 |
+| Recall | 재현율 |
+| F1 Score | F1 점수 |
+| ROC AUC | ROC-AUC |
+| Confusion Matrix | 혼동 행렬 |
+| Latency | 평균 추론 시간 |
+| Total Time | 전체 실행 시간 |
+
+## 10. 결과
+
+> 자세한 실험 결과는 `RESULT.md`를 참고하세요.
+
+```text
+비교 plot 추가 예정
+
+```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Git 협업 규칙
+----
+## 11. Git 협업 규칙
 
 ### 브랜치 규칙
 
@@ -90,9 +256,7 @@ main
 * 리뷰 없이 직접 Merge하지 않습니다.
 
 ---------------------
-
-
-## 모델 및 데이터 파일명 규칙
+## 12. 모델 및 데이터 파일명 규칙
 
 | 구분         | 위치              | 파일명 규칙                                                                              | 예시                                                 |
 |------------|-----------------|-------------------------------------------------------------------------------------|----------------------------------------------------|
@@ -104,8 +268,8 @@ main
 #### 파일명 형식
 
 * `모델명`
-* `모델명_'100/60/30/2d'_eval.json`
-* `모델명_'100/60/30/2d'_auc_roc.parquet`
+* `모델명_100_eval.json`
+* `모델명_100_auc_roc.parquet`
 
   * `100` : 데이터 100%
   * `60` : 데이터 60%
@@ -170,151 +334,21 @@ df_roc.to_parquet(
 ```
 ------------
 
-```text
-'https://app.diagrams.net/'
 
-추천 설정
-파일 형식: .drawio (원본 저장)
-README 삽입용: .svg (가장 추천) 또는 .png
-저장 위치: ./images/
-
-README에서는 이렇게 넣으면 됩니다.
-
-## 데이터 전처리
-
-<p align="center">
-  <img src="./images/preprocessing_flow.svg" width="800">
-</p>
-
-팁
-SVG로 저장하면 확대해도 깨지지 않습니다.
-images/ 폴더를 따로 만들어 관리하면 README와 EDA.md에서 같은 이미지를 재사용할 수 있습니다.
-도형 색상은 너무 화려하게 하기보다 흰색 배경 + 검은 테두리 + 파란색 강조 정도가 GitHub에서 가장 보기 좋습니다.
-
-프로젝트 규모를 보면 전처리 → 모델 학습 → 평가까지 여러 다이어그램이 생길 가능성이 있으니, 
-처음부터 images/ 폴더를 만들어 관리하는 것을 추천합니다.
-```
------------------------------
-## 개발 환경
-
-| 항목 | 버전 |
-|------|------|
-| Python | |
-| pandas | |
-| numpy | |
-| scikit-learn | |
-| matplotlib | |
-| seaborn | |
-| pyarrow | |
-----------
-```text
-Project_2/
-│
-├── models/
-│   ├── ML/
-│   └── preprocessing/
-│                 ├── model.py
-│                 ├── model.py
-│                 ├── model.py
-│                 └── model.py
-│   └── preprocessing/
-│                 ├── data_explorer.py       # 데이터 확인 및 분석
-│                 ├── data_clean.py          # 데이터 정제 (결측치, 이상치 처리) 후 분석
-│                 └── data_preprocessor.py   # 인코딩 및 스케일링 (전처리 핵심)
-├── config/
-├── data/
-│   ├── eval/
-│   ├── plots/
-│   ├── churn.csv
-│   ├── churn_preprocessed.csv
-│   ├── churn_100.csv
-│   ├── churn_60.csv
-│   └── churn_30.csv
-├── images/
-├── tests/
-│
-├── README.md
-├── EDA.md
-├── RESULT.md
-├── requirements.txt
-├── .gitignore
-└── main.py
-```
-
---------
-## 데이터 구성
-
-| 파일명 | 설명 |
-|--------|------|
-| churn.csv | 원본 데이터 |
-| churn_preprocessed.csv | 전처리 및 인코딩 완료 데이터 |
-| churn_100.csv | 전체 데이터 |
-| churn_60.csv | 60% 데이터 |
-| churn_30.csv | 30% 데이터 |
-
----------------------
-
-## 데이터 전처리
-
-- 결측치 처리
-- 중복 데이터 제거
-- 이상치 처리
-- 컬럼 삭제
-- 인코딩
-- 스케일링
-- Feature Selection
-- 데이터 분할
-
-> 자세한 내용은 `EDA.md`를 참고하세요.
-
-------------
-## 모델 목록
-
-| 모델 | 담당자 |
-|------|--------|
-| RandomForest | |
-| XGBoost | |
-| LightGBM | |
-| CatBoost | |
-
-------------------
-## 모델 학습
-
-| 항목 | 값 |
-|------|----|
-| Train | 80% |
-| Test | 20% |
-| Random State | |
-| Cross Validation | |
-
-------------
-
-## 평가 지표
-
-| Metric | 설명 |
-|--------|------|
-| Accuracy | 정확도 |
-| Precision | 정밀도 |
-| Recall | 재현율 |
-| F1 Score | F1 점수 |
-| ROC AUC | ROC-AUC |
-| Confusion Matrix | 혼동 행렬 |
-| Latency | 평균 추론 시간 |
-| Total Time | 전체 실행 시간 |
-
-## 결과
-
-- 자세한 실험 결과는 `RESULT.md`를 참고하세요.
-
---------------------------
-
-## 향후 개선 사항
+## 13. 향후 개선 사항
 
 - 하이퍼파라미터 최적화
 - 추가 모델 비교
 - 결측치 처리 방법에 따른 성능 변화 확인
 
 
+---
+## 14. 회고
+
+### 오호민 (전체 구조 구상, ERD 구성, Streamlit 구조 설계)
+- 프로젝트 전체 아키텍처를 설계하며 데이터 수집, 저장, 조회, 시각화까지의 흐름을 체계적으로 구성하는 경험을 할 수 있었습니다.
+- Streamlit 구조를 모듈화하고 컴포넌트를 재사용할 수 있도록 설계하면서 유지보수성과 확장성을 고려한 개발의 중요성을 배웠습니다.
+- 모바일 환경에서도 편리하게 사용할 수 있도록 UI/UX를 개선하며 사용자 중심 설계 경험을 쌓을 수 있었습니다.
 
 
 
@@ -322,4 +356,4 @@ Project_2/
 
 
 
-정제(Cleaning) → 인코딩(Encoding) → 스케일링(Scaling) 
+

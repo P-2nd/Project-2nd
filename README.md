@@ -48,6 +48,7 @@
 
 ---
 ## 3. 프로젝트 구조
+
 ```text
 Project_2/
 │
@@ -84,6 +85,7 @@ Project_2/
 ├── .gitignore
 └── main.py
 ```
+
 ---
 ## 4. 개발 환경
 

@@ -2,9 +2,12 @@
 
 ## 1. 실험 환경
 
-* Train : Test = **80 : 20**
-* Random Seed :
-* Evaluation Metrics
+| 항목 | 값 |
+|------|----|
+| Train | 80% |
+| Test | 20% |
+| Random State | |
+| Cross Validation | |
 
   * Accuracy
   * Precision
@@ -51,6 +54,14 @@
 
 ### 모델 단점
 
+## Hyper Parameters
+
+| Parameter | Value |
+|-----------|------|
+| n_estimators | |
+| max_depth | |
+| learning_rate | |
+
 ## Confusion Matrix
 
 <!-- 이미지 삽입 -->
@@ -58,6 +69,13 @@
 ## ROC Curve
 
 <!-- 이미지 삽입 -->
+
+## Classification Report
+
+| Class | Precision | Recall | F1 |
+|-------|----------:|-------:|---:|
+| 0 | | | |
+| 1 | | | |
 
 ## 평가 지표
 
@@ -88,6 +106,14 @@
 
 ### 모델 단점
 
+## Hyper Parameters
+
+| Parameter | Value |
+|-----------|------|
+| n_estimators | |
+| max_depth | |
+| learning_rate | |
+
 ## Confusion Matrix
 
 <!-- 이미지 삽입 -->
@@ -95,6 +121,13 @@
 ## ROC Curve
 
 <!-- 이미지 삽입 -->
+
+## Classification Report
+
+| Class | Precision | Recall | F1 |
+|-------|----------:|-------:|---:|
+| 0 | | | |
+| 1 | | | |
 
 ## 평가 지표
 
@@ -125,6 +158,14 @@
 
 ### 모델 단점
 
+## Hyper Parameters
+
+| Parameter | Value |
+|-----------|------|
+| n_estimators | |
+| max_depth | |
+| learning_rate | |
+
 ## Confusion Matrix
 
 <!-- 이미지 삽입 -->
@@ -132,6 +173,13 @@
 ## ROC Curve
 
 <!-- 이미지 삽입 -->
+
+## Classification Report
+
+| Class | Precision | Recall | F1 |
+|-------|----------:|-------:|---:|
+| 0 | | | |
+| 1 | | | |
 
 ## 평가 지표
 
@@ -163,6 +211,14 @@
 
 ### 모델 단점
 
+## Hyper Parameters
+
+| Parameter | Value |
+|-----------|------|
+| n_estimators | |
+| max_depth | |
+| learning_rate | |
+
 ## Confusion Matrix
 
 <!-- 이미지 삽입 -->
@@ -170,6 +226,13 @@
 ## ROC Curve
 
 <!-- 이미지 삽입 -->
+
+## Classification Report
+
+| Class | Precision | Recall | F1 |
+|-------|----------:|-------:|---:|
+| 0 | | | |
+| 1 | | | |
 
 ## 평가 지표
 

@@ -53,38 +53,31 @@
 ```text
 Project_2/
 │
-├── models/
-│   ├── ML/
-│   └── preprocessing/
-│                 ├── model.py
-│                 ├── model.py
-│                 ├── model.py
-│                 └── model.py
-│   └── preprocessing/
-│                 ├── data_explorer.py       
-│                 │   # 데이터 확인 및 분석
-│                 ├── data_clean.py          
-│                 │   # 데이터 정제 (결측치, 이상치 처리) 후 분석
-│                 └── data_preprocessor.py   
-│                     # 인코딩 및 스케일링 (전처리 핵심)
-├── config/
+├── configs/
+│   └── model_params.yaml        # 실험 공통 설정 및 모델별 하이퍼파라미터
 ├── data/
-│   ├── eval/
-│   ├── plots/
-│   ├── churn.csv
-│   ├── churn_preprocessed.csv
-│   ├── churn_100.csv
-│   ├── churn_60.csv
-│   └── churn_30.csv
-├── images/
+│   ├── raw/                     # 원본 데이터
+│   ├── processed/               # 전처리 데이터셋
+│   └── evaluation/              # 평가 지표, 예측값, 그래프
+├── models/                       # 학습된 모델과 전처리기
+├── notebooks/                    # 탐색용 노트북
+├── skills/
+│   └── churn-ml-project/
+│       ├── SKILL.md             # ML 실험 작업 규칙
+│       └── agents/openai.yaml   # Codex 스킬 표시 설정
+├── src/
+│   ├── common/                  # 공통 데이터·설정·저장 유틸리티
+│   ├── preprocessing/           # 정제, 인코딩, 피처 엔지니어링
+│   ├── models/                  # 모델별 학습 코드
+│   └── evaluation/              # 평가지표와 시각화 코드
 ├── tests/
 │
 ├── README.md
 ├── EDA.md
 ├── RESULT.md
-├── requirements.txt
+├── SKILLS.md                    # 프로젝트 로컬 스킬 안내
 ├── .gitignore
-└── main.py
+└── requirements.txt             # 의존성 목록(추가 예정)
 ```
 
 ---
@@ -120,8 +113,7 @@ Project_2/
 | churn.csv | 원본 데이터 |
 | churn_preprocessed.csv | 전처리 및 인코딩 완료 데이터 |
 | churn_100.csv | 전체 데이터 |
-| churn_60.csv | 60% 데이터 |
-| churn_30.csv | 30% 데이터 |
+| churn_50.csv | 50% 데이터 |
 
 ---------------------
 
@@ -263,10 +255,10 @@ main
 
 | 구분         | 위치              | 파일명 규칙                                                                              | 예시                                                 |
 |------------|-----------------|-------------------------------------------------------------------------------------|----------------------------------------------------|
-| 분류 데이터     | `../data/`      | `churn_100'.csv`<br/>`churn_60'.csv`<br/>`churn_30'.csv`                            |                                                    |
+| 분류 데이터     | `../data/`      | `churn_100'.csv`<br/>`churn_50'.csv`                                                |                                                    |
 | 모델 파일      | `./models/`     | `모델명.py`                                                                            | `DecisionTransformer.py`                           |
-| 평가 결과      | `../data/eval/` | `모델명_100_eval.json`<br/>`모델명_60_eval.json`<br/>`모델명_30_eval.json`                   | `DecisionTransformer_100_eval.json`                |
-| AUC-ROC 결과 | `../data/eval/` | `모델명_100_auc_roc.parquet`<br/>`모델명_60_auc_roc.parquet`<br/>`모델명_30_auc_roc.parquet` | `DecisionTransformer_100_auc_roc.parquet` |
+| 평가 결과      | `../data/eval/` | `모델명_100_eval.json`<br/>`모델명_50_eval.json`                                    | `DecisionTransformer_100_eval.json`                |
+| AUC-ROC 결과 | `../data/eval/` | `모델명_100_auc_roc.parquet`<br/>`모델명_50_auc_roc.parquet`                         | `DecisionTransformer_100_auc_roc.parquet` |
 
 #### 파일명 형식
 
@@ -275,8 +267,7 @@ main
 * `모델명_100_auc_roc.parquet`
 
   * `100` : 데이터 100%
-  * `60` : 데이터 60%
-  * `30` : 데이터 30%
+  * `50` : 데이터 50%
 
 #### 경로 규칙
 
@@ -352,8 +343,6 @@ df_roc.to_parquet(
 - 프로젝트 전체 아키텍처를 설계하며 데이터 수집, 저장, 조회, 시각화까지의 흐름을 체계적으로 구성하는 경험을 할 수 있었습니다.
 - Streamlit 구조를 모듈화하고 컴포넌트를 재사용할 수 있도록 설계하면서 유지보수성과 확장성을 고려한 개발의 중요성을 배웠습니다.
 - 모바일 환경에서도 편리하게 사용할 수 있도록 UI/UX를 개선하며 사용자 중심 설계 경험을 쌓을 수 있었습니다.
-
-
 
 
 

@@ -1,0 +1,6 @@
+# 실험 공통 설정과 모델별 하이퍼파라미터를 이 파일에서 관리한다.
+project: churn-prediction
+target_column: churn
+random_state: 42
+test_size: 0.2
+training_fractions: [1.0, 0.5]

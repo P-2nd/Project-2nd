@@ -8,3 +8,6 @@
 .env
 .env.*
 
+# 프로젝트 로컬 Codex 스킬은 팀과 공유한다.
+!skills/
+!skills/**

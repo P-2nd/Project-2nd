@@ -1,0 +1,4 @@
+interface:
+  display_name: "고객 이탈 예측 ML"
+  short_description: "고객 이탈 예측 모델의 실험 구조와 재현성 규칙"
+  default_prompt: "$churn-ml-project를 사용해 고객 이탈 예측 실험을 안전하고 재현 가능하게 구성해줘."

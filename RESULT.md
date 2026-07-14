@@ -28,15 +28,7 @@
 | LightGBM     |          |           |        |          |         |              |
 | CatBoost     |          |           |        |          |         |              |
 
-### 60%
-| Model        | Accuracy | Precision | Recall | F1 Score | ROC AUC | Latency (ms) |
-| ------------ | -------: | --------: | -----: | -------: | ------: | -----------: |
-| RandomForest |          |           |        |          |         |              |
-| XGBoost      |          |           |        |          |         |              |
-| LightGBM     |          |           |        |          |         |              |
-| CatBoost     |          |           |        |          |         |              |
-
-### 30%
+### 50%
 | Model        | Accuracy | Precision | Recall | F1 Score | ROC AUC | Latency (ms) |
 | ------------ | -------: | --------: | -----: | -------: | ------: | -----------: |
 | RandomForest |          |           |        |          |         |              |
@@ -94,8 +86,7 @@
 | Dataset   | Accuracy | Precision | Recall | F1 Score | ROC AUC |
 | --------- | -------: | --------: | -----: | -------: | ------: |
 | churn_100 |          |           |        |          |         |
-| churn_60  |          |           |        |          |         |
-| churn_30  |          |           |        |          |         |
+| churn_50  |          |           |        |          |         |
 
 ---
 
@@ -146,8 +137,7 @@
 | Dataset   | Accuracy | Precision | Recall | F1 Score | ROC AUC |
 | --------- | -------: | --------: | -----: | -------: | ------: |
 | churn_100 |          |           |        |          |         |
-| churn_60  |          |           |        |          |         |
-| churn_30  |          |           |        |          |         |
+| churn_50  |          |           |        |          |         |
 
 ---
 
@@ -198,8 +188,7 @@
 | Dataset   | Accuracy | Precision | Recall | F1 Score | ROC AUC |
 | --------- | -------: | --------: | -----: | -------: | ------: |
 | churn_100 |          |           |        |          |         |
-| churn_60  |          |           |        |          |         |
-| churn_30  |          |           |        |          |         |
+| churn_50  |          |           |        |          |         |
 
 ---
 
@@ -251,8 +240,7 @@
 | Dataset   | Accuracy | Precision | Recall | F1 Score | ROC AUC |
 | --------- | -------: | --------: | -----: | -------: | ------: |
 | churn_100 |          |           |        |          |         |
-| churn_60  |          |           |        |          |         |
-| churn_30  |          |           |        |          |         |
+| churn_50  |          |           |        |          |         |
 
 ---
 

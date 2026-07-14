@@ -58,6 +58,7 @@ Project_2/
 ├── data/
 │   ├── raw/                     # 원본 데이터
 │   ├── processed/               # 전처리 데이터셋
+│   ├── eda/               		 # eda 데이터
 │   └── evaluation/              # 평가 지표, 예측값, 그래프
 ├── models/                       # 학습된 모델과 전처리기
 ├── notebooks/                    # 탐색용 노트북

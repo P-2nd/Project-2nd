@@ -1,0 +1,34 @@
+# Python 3.12 사용
+
+# 데이터 처리·전처리
+numpy>=2.1,<3
+pandas>=2.2,<3
+scipy>=1.14,<2
+PyYAML>=6.0,<7
+pyarrow>=17,<24
+
+# 머신러닝: 기준 모델, 불균형 처리, 모델 저장
+scikit-learn>=1.6,<2
+imbalanced-learn>=0.13,<1
+joblib>=1.4,<2
+
+# 트리 기반 모델 비교
+xgboost>=2.1,<4
+lightgbm>=4.5,<5
+catboost>=1.2,<2
+
+# 선택적 딥러닝: 정형 데이터 MLP
+torch>=2.6,<3
+tensorboard>=2.18,<3
+tqdm>=4.66,<5
+
+# 평가·시각화·해석·튜닝
+matplotlib>=3.9,<4
+seaborn>=0.13,<1
+plotly>=5.24,<7
+shap>=0.46,<1
+optuna>=4.0,<5
+
+# 저장 모델 기반 시연 및 테스트
+streamlit>=1.45,<2
+pytest>=8,<10

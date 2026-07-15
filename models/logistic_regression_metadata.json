@@ -1,0 +1,70 @@
+{
+  "model": "LogisticRegression",
+  "purpose": "EDA-based logistic-regression churn model",
+  "input_path": "data/raw/gym_churn_1M_dataset.csv",
+  "sample_rows": 30000,
+  "features": [
+    "Age",
+    "Monthly_Visits",
+    "Avg_Workout_Duration_Min",
+    "Cardio_Preference",
+    "Group_Class_Attendance",
+    "PT_Session_Count",
+    "Supplement_Usage",
+    "Avg_Equipment_Wait_Time_Min",
+    "Late_Payment_Count",
+    "Profile_Type",
+    "Start_Year",
+    "Start_Month",
+    "Start_Weekday",
+    "Membership_Days"
+  ],
+  "target_column": "Churn",
+  "target_meaning": {
+    "0": "retained",
+    "1": "churned"
+  },
+  "random_state": 42,
+  "threshold_from_validation": 0.41788052923193114,
+  "preprocessing": {
+    "dropped_columns": [
+      "Member_ID",
+      "Treadmill_Avg_Speed_Kmh",
+      "Treadmill_Avg_Incline_Pct",
+      "Gender",
+      "Membership_Type",
+      "Peak_Hour_Preference",
+      "Monthly_Fee"
+    ],
+    "date_features": [
+      "Start_Year",
+      "Start_Month",
+      "Start_Weekday",
+      "Membership_Days"
+    ],
+    "standard_scaled_columns": [
+      "Age",
+      "Monthly_Visits",
+      "Avg_Workout_Duration_Min",
+      "Group_Class_Attendance",
+      "Avg_Equipment_Wait_Time_Min",
+      "Start_Year",
+      "Start_Month",
+      "Start_Weekday",
+      "Membership_Days"
+    ],
+    "robust_scaled_columns": [
+      "PT_Session_Count",
+      "Late_Payment_Count"
+    ],
+    "one_hot_columns": [
+      "Cardio_Preference",
+      "Supplement_Usage",
+      "Profile_Type"
+    ]
+  },
+  "artifacts": {
+    "pipeline": "models/logistic_regression_pipeline.joblib",
+    "metrics": "data/evaluation/logistic_regression_metrics.json"
+  }
+}

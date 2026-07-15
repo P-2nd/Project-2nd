@@ -1,0 +1,93 @@
+{
+  "metadata": {
+    "model": "KNeighborsClassifier",
+    "purpose": "small-sample KNN model; not a full 1M-row final-model experiment",
+    "input_path": "data/raw/gym_churn_1M_dataset.csv",
+    "sample_rows": 30000,
+    "features": [
+      "Age",
+      "Monthly_Visits",
+      "Avg_Workout_Duration_Min",
+      "Cardio_Preference",
+      "Group_Class_Attendance",
+      "PT_Session_Count",
+      "Supplement_Usage",
+      "Avg_Equipment_Wait_Time_Min",
+      "Late_Payment_Count",
+      "Profile_Type",
+      "Start_Year",
+      "Start_Month",
+      "Start_Weekday",
+      "Membership_Days"
+    ],
+    "target_column": "Churn",
+    "target_meaning": {
+      "0": "retained",
+      "1": "churned"
+    },
+    "random_state": 42,
+    "threshold_from_validation": 0.17990693517707926,
+    "preprocessing": {
+      "dropped_columns": [
+        "Member_ID",
+        "Treadmill_Avg_Speed_Kmh",
+        "Treadmill_Avg_Incline_Pct",
+        "Gender",
+        "Membership_Type",
+        "Peak_Hour_Preference",
+        "Monthly_Fee"
+      ],
+      "date_features": [
+        "Start_Year",
+        "Start_Month",
+        "Start_Weekday",
+        "Membership_Days"
+      ],
+      "standard_scaled_columns": [
+        "Age",
+        "Monthly_Visits",
+        "Avg_Workout_Duration_Min",
+        "Group_Class_Attendance",
+        "Avg_Equipment_Wait_Time_Min",
+        "Start_Year",
+        "Start_Month",
+        "Start_Weekday",
+        "Membership_Days"
+      ],
+      "robust_scaled_columns": [
+        "PT_Session_Count",
+        "Late_Payment_Count"
+      ],
+      "one_hot_columns": [
+        "Cardio_Preference",
+        "Supplement_Usage",
+        "Profile_Type"
+      ]
+    },
+    "artifacts": {
+      "pipeline": "models/knn_pipeline.joblib",
+      "metrics": "data/evaluation/knn_metrics.json"
+    }
+  },
+  "test_metrics": {
+    "accuracy": 0.4285,
+    "precision": 0.3965643274853801,
+    "recall": 0.9447104919460165,
+    "f1": 0.5586304543699318,
+    "roc_auc": 0.6010066553481035,
+    "pr_auc": 0.48089637051463213,
+    "confusion_matrix": [
+      [
+        401,
+        3302
+      ],
+      [
+        127,
+        2170
+      ]
+    ],
+    "total_samples": 6000,
+    "total_inference_seconds": 0.2545661250005651,
+    "average_inference_ms": 0.04242768750009418
+  }
+}

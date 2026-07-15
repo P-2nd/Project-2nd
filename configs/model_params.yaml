@@ -1,14 +1,23 @@
 # 실험 공통 설정과 모델별 하이퍼파라미터를 이 파일에서 관리한다.
 project: churn-prediction
-target_column: churn
+target_column: Churn
 random_state: 42
 test_size: 0.2
 training_fractions: [1.0, 0.5]
 
-# 소규모 KNN 기준 모델 설정
-knn_baseline:
+# 소규모 KNN 모델 설정
+knn:
   n_neighbors: 15
   weights: distance
   n_jobs: 1
+  max_rows: 30000
+  validation_size: 0.25
+
+# EDA 기준 전처리를 적용하는 Logistic Regression 모델
+logistic_regression:
+  C: 1.0
+  class_weight: balanced
+  max_iter: 1000
+  solver: lbfgs
   max_rows: 30000
   validation_size: 0.25

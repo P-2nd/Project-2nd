@@ -62,9 +62,10 @@ RAW_FEATURE_COLUMNS = (
 
 # ``DATE_COLUMN``에서 생성하는 파생 피처 이름
 DATE_FEATURE_COLUMNS = (
-    "membership_start_year",
-    "membership_start_month",
-    "membership_start_dayofweek",
+    "Start_Year",
+    "Start_Month",
+    "Start_Weekday",
+    "Membership_Days",
 )
 
 
@@ -75,10 +76,10 @@ TRAINING_FRACTIONS = (1.0, 0.5)
 DEFAULT_CLASSIFICATION_THRESHOLD = 0.5
 
 
-# 현재 기준 KNN 실험 산출물
-KNN_BASELINE_MODEL_PATH = MODELS_DIR / "knn_baseline_pipeline.joblib"
-KNN_BASELINE_METADATA_PATH = MODELS_DIR / "knn_baseline_metadata.json"
-KNN_BASELINE_METRICS_PATH = EVALUATION_DATA_DIR / "knn_baseline_metrics.json"
+# KNN 실험 산출물
+KNN_MODEL_PATH = MODELS_DIR / "knn_pipeline.joblib"
+KNN_METADATA_PATH = MODELS_DIR / "knn_metadata.json"
+KNN_METRICS_PATH = EVALUATION_DATA_DIR / "knn_metrics.json"
 
 
 __all__ = [
@@ -91,9 +92,9 @@ __all__ = [
     "ENV_PATH",
     "EVALUATION_DATA_DIR",
     "ID_COLUMN",
-    "KNN_BASELINE_METADATA_PATH",
-    "KNN_BASELINE_METRICS_PATH",
-    "KNN_BASELINE_MODEL_PATH",
+    "KNN_METADATA_PATH",
+    "KNN_METRICS_PATH",
+    "KNN_MODEL_PATH",
     "MODELS_DIR",
     "MODEL_PARAMS_PATH",
     "NOTEBOOKS_DIR",

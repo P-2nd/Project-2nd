@@ -1,0 +1,194 @@
+{
+  "metadata": {
+    "model": "XGBoost",
+    "training_fraction": 0.5,
+    "input_path": "/Users/jinho/Desktop/SKN/SKN_33/2nd/Project-2nd/data/processed/churn_preprocessed_full.csv",
+    "rows": {
+      "train": 320000,
+      "validation": 160000,
+      "test": 200000
+    },
+    "features": [
+      "Age",
+      "Monthly_Visits",
+      "Avg_Workout_Duration_Min",
+      "Group_Class_Attendance",
+      "PT_Session_Count",
+      "Avg_Equipment_Wait_Time_Min",
+      "Late_Payment_Count",
+      "Start_Year",
+      "Start_Month",
+      "Start_Weekday",
+      "Membership_Days",
+      "Cardio_Preference_Elliptical",
+      "Cardio_Preference_No Preference",
+      "Cardio_Preference_Rowing",
+      "Cardio_Preference_Treadmill",
+      "Supplement_Usage_Full Stack",
+      "Supplement_Usage_No Protein Supplements",
+      "Supplement_Usage_Pre-Workout",
+      "Supplement_Usage_Whey Protein",
+      "Profile_Type_Drop-out",
+      "Profile_Type_Hardcore",
+      "Profile_Type_Regular"
+    ],
+    "target_column": "Churn",
+    "target_meaning": {
+      "0": "retained",
+      "1": "churned"
+    },
+    "random_state": 42,
+    "split": {
+      "test_size": 0.2,
+      "validation_size": 0.2,
+      "stratified": true,
+      "note": "Test와 Validation은 모든 fraction에서 동일하다."
+    },
+    "hyperparameters": {
+      "n_estimators": 2000,
+      "learning_rate": 0.05,
+      "max_depth": 6,
+      "min_child_weight": 1,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "reg_lambda": 1.0,
+      "reg_alpha": 0.0,
+      "tree_method": "hist",
+      "eval_metric": "aucpr",
+      "n_jobs": -1
+    },
+    "scale_pos_weight": null,
+    "early_stopping_rounds": 50,
+    "best_iteration": 86,
+    "threshold_strategy": "f1",
+    "threshold_from_validation": 0.30258363485336304,
+    "training_seconds": 3.2346351250000005,
+    "total_seconds": 3.4960612090000005,
+    "python_version": "3.9.6",
+    "artifacts": {
+      "pipeline": "models/xgboost_50_pipeline.joblib",
+      "metadata": "models/xgboost_50_metadata.json",
+      "metrics": "data/evaluation/XGBoost_50_eval.json",
+      "roc_source": "data/evaluation/XGBoost_50_auc_roc.parquet"
+    }
+  },
+  "performance": {
+    "total_time_sec": 3.4960612090000005,
+    "avg_latency_ms": 0.000503892084999995,
+    "total_samples": 200000
+  },
+  "confusion_matrix": [
+    [
+      51715,
+      71145
+    ],
+    [
+      14375,
+      62765
+    ]
+  ],
+  "auc_score": 0.6868911526284094,
+  "test_metrics": {
+    "accuracy": 0.5724,
+    "precision": 0.4687103278321261,
+    "recall": 0.8136505055742805,
+    "f1": 0.5947879649372186,
+    "roc_auc": 0.6868911526284094,
+    "pr_auc": 0.5690422430587665,
+    "confusion_matrix": [
+      [
+        51715,
+        71145
+      ],
+      [
+        14375,
+        62765
+      ]
+    ],
+    "total_samples": 200000,
+    "total_inference_seconds": 0.10077841699999901,
+    "average_inference_ms": 0.000503892084999995
+  },
+  "feature_importances_top20": [
+    {
+      "feature": "numeric__Late_Payment_Count",
+      "importance": 0.3728233575820923
+    },
+    {
+      "feature": "numeric__Profile_Type_Drop-out",
+      "importance": 0.22906944155693054
+    },
+    {
+      "feature": "numeric__Monthly_Visits",
+      "importance": 0.07593989372253418
+    },
+    {
+      "feature": "numeric__Start_Year",
+      "importance": 0.06957463920116425
+    },
+    {
+      "feature": "numeric__PT_Session_Count",
+      "importance": 0.054111648350954056
+    },
+    {
+      "feature": "numeric__Avg_Equipment_Wait_Time_Min",
+      "importance": 0.029122432693839073
+    },
+    {
+      "feature": "numeric__Group_Class_Attendance",
+      "importance": 0.028529666364192963
+    },
+    {
+      "feature": "numeric__Membership_Days",
+      "importance": 0.026660291478037834
+    },
+    {
+      "feature": "numeric__Age",
+      "importance": 0.018999332562088966
+    },
+    {
+      "feature": "numeric__Profile_Type_Hardcore",
+      "importance": 0.009839155711233616
+    },
+    {
+      "feature": "numeric__Profile_Type_Regular",
+      "importance": 0.008687758818268776
+    },
+    {
+      "feature": "numeric__Avg_Workout_Duration_Min",
+      "importance": 0.008214015513658524
+    },
+    {
+      "feature": "numeric__Start_Month",
+      "importance": 0.007309331092983484
+    },
+    {
+      "feature": "numeric__Cardio_Preference_No Preference",
+      "importance": 0.007272273302078247
+    },
+    {
+      "feature": "numeric__Supplement_Usage_Full Stack",
+      "importance": 0.00714493403211236
+    },
+    {
+      "feature": "numeric__Cardio_Preference_Elliptical",
+      "importance": 0.007027776446193457
+    },
+    {
+      "feature": "numeric__Start_Weekday",
+      "importance": 0.006985858082771301
+    },
+    {
+      "feature": "numeric__Supplement_Usage_Pre-Workout",
+      "importance": 0.006941173691302538
+    },
+    {
+      "feature": "numeric__Cardio_Preference_Rowing",
+      "importance": 0.006663747597485781
+    },
+    {
+      "feature": "numeric__Cardio_Preference_Treadmill",
+      "importance": 0.006521147675812244
+    }
+  ]
+}

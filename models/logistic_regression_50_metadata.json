@@ -8,7 +8,6 @@
   "features": [
     "Late_Payment_Count",
     "Monthly_Visits",
-    "PT_Session_Count",
     "Start_Year",
     "Membership_Days",
     "Group_Class_Attendance",
@@ -24,11 +23,12 @@
     "1": "churned"
   },
   "random_state": 42,
-  "threshold_from_validation": 0.45695377579192203,
+  "threshold_from_validation": 0.39215230993044276,
   "preprocessing": "Applied upstream in the input CSV; this script imputes and scales numeric features within the training pipeline.",
   "artifacts": {
     "pipeline": "models/logistic_regression_50_pipeline.joblib",
     "metadata": "models/logistic_regression_50_metadata.json",
-    "metrics": "data/evaluation/LogisticRegression_50_eval.json"
+    "result_data": "data/results/result_data.json",
+    "roc_source": "data/results/roc/logistic_regression_50_auc_roc.parquet"
   }
 }

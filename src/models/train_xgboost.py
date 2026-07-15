@@ -54,6 +54,7 @@ from xgboost import XGBClassifier
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402  경로 설정 후 임포트해야 한다.
+from src.common.results import roc_data_path, upsert_result  # noqa: E402
 
 
 MODEL_NAME = "XGBoost"
@@ -344,21 +345,20 @@ def save_artifacts(
     y_test: pd.Series,
     test_probabilities: np.ndarray,
 ) -> dict[str, str]:
-    """README 12장 파일명 규칙에 맞춰 모델·지표·ROC 원천 데이터를 저장한다."""
+    """모델·메타데이터·ROC 원천 데이터를 저장하고 통합 결과 파일을 갱신한다."""
     config.MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    config.EVALUATION_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    config.RESULTS_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     model_path = config.MODELS_DIR / f"xgboost_{label}_pipeline.joblib"
     metadata_path = config.MODELS_DIR / f"xgboost_{label}_metadata.json"
-    evaluation_path = config.EVALUATION_DATA_DIR / f"{MODEL_NAME}_{label}_eval.json"
-    roc_path = config.EVALUATION_DATA_DIR / f"{MODEL_NAME}_{label}_auc_roc.parquet"
+    roc_path = roc_data_path("xgboost", label)
 
     joblib.dump(pipeline, model_path)
 
     artifacts = {
         "pipeline": str(model_path.relative_to(config.PROJECT_ROOT)),
         "metadata": str(metadata_path.relative_to(config.PROJECT_ROOT)),
-        "metrics": str(evaluation_path.relative_to(config.PROJECT_ROOT)),
+        "result_data": str(config.RESULT_DATA_PATH.relative_to(config.PROJECT_ROOT)),
         "roc_source": str(roc_path.relative_to(config.PROJECT_ROOT)),
     }
     metadata_with_artifacts = {**metadata, "artifacts": artifacts}
@@ -367,27 +367,24 @@ def save_artifacts(
         json.dumps(metadata_with_artifacts, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    # README 12장이 요구하는 performance/confusion_matrix/auc_score와
-    # GUIDE 6.2가 요구하는 전체 지표를 함께 담는다.
-    evaluation_payload = {
-        "metadata": metadata_with_artifacts,
-        "performance": {
-            "total_time_sec": metadata["total_seconds"],
-            "avg_latency_ms": metrics["average_inference_ms"],
-            "total_samples": metrics["total_samples"],
-        },
-        "confusion_matrix": metrics["confusion_matrix"],
-        "auc_score": metrics["roc_auc"],
-        "test_metrics": metrics,
-        "feature_importances_top20": top_feature_importances(pipeline),
-    }
-    evaluation_path.write_text(
-        json.dumps(evaluation_payload, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-
-    # ROC 곡선은 팀 공통 그래프 코드에서 그리므로 원천 데이터만 남긴다.
+    roc_path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame({"y_true": y_test.to_numpy(), "y_score": test_probabilities}).to_parquet(
         roc_path, index=False
+    )
+    upsert_result(
+        model_key="xgboost",
+        model_name=MODEL_NAME,
+        label=label,
+        experiment={
+            "comparison_axis": "training_fraction",
+            "training_fraction": float(metadata["training_fraction"]),
+            "feature_count": int(len(metadata["features"])),
+        },
+        metrics=metrics,
+        threshold=float(metadata["threshold_from_validation"]),
+        total_time_sec=float(metadata["total_seconds"]),
+        artifacts=artifacts,
+        extras={"feature_importances_top20": top_feature_importances(pipeline)},
     )
     return artifacts
 

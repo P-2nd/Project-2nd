@@ -1,0 +1,494 @@
+{
+  "schema_version": 1,
+  "results": {
+    "knn": {
+      "100": {
+        "model": "KNN",
+        "experiment": {
+          "label": "100",
+          "comparison_axis": "feature_set",
+          "feature_set": "full",
+          "feature_count": 21
+        },
+        "performance": {
+          "total_time_sec": 4.862366035999003,
+          "avg_latency_ms": 0.035116203833240434,
+          "total_samples": 6000
+        },
+        "confusion_matrix": [
+          [
+            405,
+            3298
+          ],
+          [
+            138,
+            2159
+          ]
+        ],
+        "auc_score": 0.5985591463509978,
+        "threshold": 0.17579950934229832,
+        "test_metrics": {
+          "accuracy": 0.42733333333333334,
+          "precision": 0.3956386292834891,
+          "recall": 0.9399216369177188,
+          "f1": 0.5568738715501677,
+          "roc_auc": 0.5985591463509978,
+          "pr_auc": 0.4789764468427337,
+          "confusion_matrix": [
+            [
+              405,
+              3298
+            ],
+            [
+              138,
+              2159
+            ]
+          ],
+          "total_samples": 6000,
+          "total_inference_seconds": 0.2106972229994426,
+          "average_inference_ms": 0.035116203833240434
+        },
+        "artifacts": {
+          "pipeline": "models/knn_100_pipeline.joblib",
+          "metadata": "models/knn_100_metadata.json",
+          "result_data": "data/results/result_data.json",
+          "roc_source": "data/results/roc/knn_100_auc_roc.parquet"
+        }
+      },
+      "50": {
+        "model": "KNN",
+        "experiment": {
+          "label": "50",
+          "comparison_axis": "feature_set",
+          "feature_set": "pct50",
+          "feature_count": 10
+        },
+        "performance": {
+          "total_time_sec": 3.7466228349985613,
+          "avg_latency_ms": 0.0798076684999008,
+          "total_samples": 6000
+        },
+        "confusion_matrix": [
+          [
+            830,
+            2873
+          ],
+          [
+            258,
+            2039
+          ]
+        ],
+        "auc_score": 0.6183162153878458,
+        "threshold": 0.20706469920813603,
+        "test_metrics": {
+          "accuracy": 0.4781666666666667,
+          "precision": 0.4151058631921824,
+          "recall": 0.8876795820635611,
+          "f1": 0.5656817866555695,
+          "roc_auc": 0.6183162153878458,
+          "pr_auc": 0.4950674710738587,
+          "confusion_matrix": [
+            [
+              830,
+              2873
+            ],
+            [
+              258,
+              2039
+            ]
+          ],
+          "total_samples": 6000,
+          "total_inference_seconds": 0.4788460109994048,
+          "average_inference_ms": 0.0798076684999008
+        },
+        "artifacts": {
+          "pipeline": "models/knn_50_pipeline.joblib",
+          "metadata": "models/knn_50_metadata.json",
+          "result_data": "data/results/result_data.json",
+          "roc_source": "data/results/roc/knn_50_auc_roc.parquet"
+        }
+      }
+    },
+    "logistic_regression": {
+      "100": {
+        "model": "LogisticRegression",
+        "experiment": {
+          "label": "100",
+          "comparison_axis": "feature_set",
+          "feature_set": "full",
+          "feature_count": 21
+        },
+        "performance": {
+          "total_time_sec": 4.506947399000637,
+          "avg_latency_ms": 0.001931512000131382,
+          "total_samples": 6000
+        },
+        "confusion_matrix": [
+          [
+            1377,
+            2326
+          ],
+          [
+            402,
+            1895
+          ]
+        ],
+        "auc_score": 0.6701804688123656,
+        "threshold": 0.39235532104450915,
+        "test_metrics": {
+          "accuracy": 0.5453333333333333,
+          "precision": 0.44894574745321014,
+          "recall": 0.8249891162385721,
+          "f1": 0.581466707579012,
+          "roc_auc": 0.6701804688123656,
+          "pr_auc": 0.5462542661135046,
+          "confusion_matrix": [
+            [
+              1377,
+              2326
+            ],
+            [
+              402,
+              1895
+            ]
+          ],
+          "total_samples": 6000,
+          "total_inference_seconds": 0.011589072000788292,
+          "average_inference_ms": 0.001931512000131382
+        },
+        "artifacts": {
+          "pipeline": "models/logistic_regression_100_pipeline.joblib",
+          "metadata": "models/logistic_regression_100_metadata.json",
+          "result_data": "data/results/result_data.json",
+          "roc_source": "data/results/roc/logistic_regression_100_auc_roc.parquet"
+        }
+      },
+      "50": {
+        "model": "LogisticRegression",
+        "experiment": {
+          "label": "50",
+          "comparison_axis": "feature_set",
+          "feature_set": "pct50",
+          "feature_count": 10
+        },
+        "performance": {
+          "total_time_sec": 2.872652881000249,
+          "avg_latency_ms": 0.0019933958331724475,
+          "total_samples": 6000
+        },
+        "confusion_matrix": [
+          [
+            1345,
+            2358
+          ],
+          [
+            406,
+            1891
+          ]
+        ],
+        "auc_score": 0.6689208563906638,
+        "threshold": 0.39215230993044276,
+        "test_metrics": {
+          "accuracy": 0.5393333333333333,
+          "precision": 0.44504589315132975,
+          "recall": 0.8232477144101001,
+          "f1": 0.5777574091047968,
+          "roc_auc": 0.6689208563906638,
+          "pr_auc": 0.5448540226763063,
+          "confusion_matrix": [
+            [
+              1345,
+              2358
+            ],
+            [
+              406,
+              1891
+            ]
+          ],
+          "total_samples": 6000,
+          "total_inference_seconds": 0.011960374999034684,
+          "average_inference_ms": 0.0019933958331724475
+        },
+        "artifacts": {
+          "pipeline": "models/logistic_regression_50_pipeline.joblib",
+          "metadata": "models/logistic_regression_50_metadata.json",
+          "result_data": "data/results/result_data.json",
+          "roc_source": "data/results/roc/logistic_regression_50_auc_roc.parquet"
+        }
+      }
+    },
+    "xgboost": {
+      "100": {
+        "model": "XGBoost",
+        "experiment": {
+          "label": "100",
+          "comparison_axis": "training_fraction",
+          "training_fraction": 1.0,
+          "feature_count": 22
+        },
+        "performance": {
+          "total_time_sec": 26.34361077199719,
+          "avg_latency_ms": 0.0035540233699975945,
+          "total_samples": 200000
+        },
+        "confusion_matrix": [
+          [
+            53717,
+            69143
+          ],
+          [
+            15272,
+            61868
+          ]
+        ],
+        "auc_score": 0.6874935600092194,
+        "threshold": 0.3078157603740692,
+        "test_metrics": {
+          "accuracy": 0.577925,
+          "precision": 0.47223515582660996,
+          "recall": 0.8020222971221156,
+          "f1": 0.5944530653227705,
+          "roc_auc": 0.6874935600092194,
+          "pr_auc": 0.5699960163037938,
+          "confusion_matrix": [
+            [
+              53717,
+              69143
+            ],
+            [
+              15272,
+              61868
+            ]
+          ],
+          "total_samples": 200000,
+          "total_inference_seconds": 0.7108046739995189,
+          "average_inference_ms": 0.0035540233699975945
+        },
+        "artifacts": {
+          "pipeline": "models/xgboost_100_pipeline.joblib",
+          "metadata": "models/xgboost_100_metadata.json",
+          "result_data": "data/results/result_data.json",
+          "roc_source": "data/results/roc/xgboost_100_auc_roc.parquet"
+        },
+        "feature_importances_top20": [
+          {
+            "feature": "numeric__Late_Payment_Count",
+            "importance": 0.35481318831443787
+          },
+          {
+            "feature": "numeric__Profile_Type_Drop-out",
+            "importance": 0.27172598242759705
+          },
+          {
+            "feature": "numeric__Monthly_Visits",
+            "importance": 0.0845341682434082
+          },
+          {
+            "feature": "numeric__Start_Year",
+            "importance": 0.05649206414818764
+          },
+          {
+            "feature": "numeric__PT_Session_Count",
+            "importance": 0.05113811045885086
+          },
+          {
+            "feature": "numeric__Group_Class_Attendance",
+            "importance": 0.03042503073811531
+          },
+          {
+            "feature": "numeric__Avg_Equipment_Wait_Time_Min",
+            "importance": 0.02999967150390148
+          },
+          {
+            "feature": "numeric__Membership_Days",
+            "importance": 0.026894450187683105
+          },
+          {
+            "feature": "numeric__Age",
+            "importance": 0.01848704181611538
+          },
+          {
+            "feature": "numeric__Profile_Type_Regular",
+            "importance": 0.016569852828979492
+          },
+          {
+            "feature": "numeric__Avg_Workout_Duration_Min",
+            "importance": 0.0069846343249082565
+          },
+          {
+            "feature": "numeric__Start_Month",
+            "importance": 0.0049918051809072495
+          },
+          {
+            "feature": "numeric__Supplement_Usage_Pre-Workout",
+            "importance": 0.004912287928164005
+          },
+          {
+            "feature": "numeric__Cardio_Preference_No Preference",
+            "importance": 0.004875558894127607
+          },
+          {
+            "feature": "numeric__Start_Weekday",
+            "importance": 0.0048554399982094765
+          },
+          {
+            "feature": "numeric__Cardio_Preference_Rowing",
+            "importance": 0.004781553987413645
+          },
+          {
+            "feature": "numeric__Cardio_Preference_Elliptical",
+            "importance": 0.004712297115474939
+          },
+          {
+            "feature": "numeric__Profile_Type_Hardcore",
+            "importance": 0.0046456013806164265
+          },
+          {
+            "feature": "numeric__Cardio_Preference_Treadmill",
+            "importance": 0.004608792718499899
+          },
+          {
+            "feature": "numeric__Supplement_Usage_Full Stack",
+            "importance": 0.004600184038281441
+          }
+        ]
+      },
+      "50": {
+        "model": "XGBoost",
+        "experiment": {
+          "label": "50",
+          "comparison_axis": "training_fraction",
+          "training_fraction": 0.5,
+          "feature_count": 22
+        },
+        "performance": {
+          "total_time_sec": 22.005117618999066,
+          "avg_latency_ms": 0.004052679300002637,
+          "total_samples": 200000
+        },
+        "confusion_matrix": [
+          [
+            53926,
+            68934
+          ],
+          [
+            15378,
+            61762
+          ]
+        ],
+        "auc_score": 0.68693819950205,
+        "threshold": 0.30719873309135437,
+        "test_metrics": {
+          "accuracy": 0.57844,
+          "precision": 0.4725622819367081,
+          "recall": 0.8006481721545242,
+          "f1": 0.5943339941107412,
+          "roc_auc": 0.68693819950205,
+          "pr_auc": 0.5690252616213388,
+          "confusion_matrix": [
+            [
+              53926,
+              68934
+            ],
+            [
+              15378,
+              61762
+            ]
+          ],
+          "total_samples": 200000,
+          "total_inference_seconds": 0.8105358600005275,
+          "average_inference_ms": 0.004052679300002637
+        },
+        "artifacts": {
+          "pipeline": "models/xgboost_50_pipeline.joblib",
+          "metadata": "models/xgboost_50_metadata.json",
+          "result_data": "data/results/result_data.json",
+          "roc_source": "data/results/roc/xgboost_50_auc_roc.parquet"
+        },
+        "feature_importances_top20": [
+          {
+            "feature": "numeric__Late_Payment_Count",
+            "importance": 0.33744901418685913
+          },
+          {
+            "feature": "numeric__Profile_Type_Drop-out",
+            "importance": 0.23696675896644592
+          },
+          {
+            "feature": "numeric__Monthly_Visits",
+            "importance": 0.0891287550330162
+          },
+          {
+            "feature": "numeric__Start_Year",
+            "importance": 0.05380335822701454
+          },
+          {
+            "feature": "numeric__PT_Session_Count",
+            "importance": 0.053394269198179245
+          },
+          {
+            "feature": "numeric__Group_Class_Attendance",
+            "importance": 0.031195690855383873
+          },
+          {
+            "feature": "numeric__Avg_Equipment_Wait_Time_Min",
+            "importance": 0.030713830143213272
+          },
+          {
+            "feature": "numeric__Membership_Days",
+            "importance": 0.029108859598636627
+          },
+          {
+            "feature": "numeric__Age",
+            "importance": 0.02083822526037693
+          },
+          {
+            "feature": "numeric__Profile_Type_Regular",
+            "importance": 0.016533037647604942
+          },
+          {
+            "feature": "numeric__Profile_Type_Hardcore",
+            "importance": 0.010920642875134945
+          },
+          {
+            "feature": "numeric__Avg_Workout_Duration_Min",
+            "importance": 0.010322303511202335
+          },
+          {
+            "feature": "numeric__Supplement_Usage_Whey Protein",
+            "importance": 0.008458400145173073
+          },
+          {
+            "feature": "numeric__Supplement_Usage_Full Stack",
+            "importance": 0.008434281684458256
+          },
+          {
+            "feature": "numeric__Cardio_Preference_No Preference",
+            "importance": 0.008281403221189976
+          },
+          {
+            "feature": "numeric__Supplement_Usage_Pre-Workout",
+            "importance": 0.008049008436501026
+          },
+          {
+            "feature": "numeric__Cardio_Preference_Elliptical",
+            "importance": 0.008038321509957314
+          },
+          {
+            "feature": "numeric__Start_Weekday",
+            "importance": 0.007864411920309067
+          },
+          {
+            "feature": "numeric__Cardio_Preference_Rowing",
+            "importance": 0.00780454371124506
+          },
+          {
+            "feature": "numeric__Start_Month",
+            "importance": 0.007683271076530218
+          }
+        ]
+      }
+    }
+  },
+  "updated_at": "2026-07-15T08:46:06.892325+00:00"
+}

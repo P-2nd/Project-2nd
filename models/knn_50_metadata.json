@@ -8,7 +8,6 @@
   "features": [
     "Late_Payment_Count",
     "Monthly_Visits",
-    "PT_Session_Count",
     "Start_Year",
     "Membership_Days",
     "Group_Class_Attendance",
@@ -24,11 +23,12 @@
     "1": "churned"
   },
   "random_state": 42,
-  "threshold_from_validation": 0.24622700140129478,
+  "threshold_from_validation": 0.20706469920813603,
   "preprocessing": "Applied upstream in the input CSV; this script only median-imputes.",
   "artifacts": {
     "pipeline": "models/knn_50_pipeline.joblib",
     "metadata": "models/knn_50_metadata.json",
-    "metrics": "data/evaluation/KNN_50_eval.json"
+    "result_data": "data/results/result_data.json",
+    "roc_source": "data/results/roc/knn_50_auc_roc.parquet"
   }
 }

@@ -269,27 +269,26 @@ main
 
 ## 12. 모델 및 데이터 파일명 규칙
 
-| 구분         | 위치              | 파일명 규칙                                                                              | 예시                                                 |
-|------------|-----------------|-------------------------------------------------------------------------------------|----------------------------------------------------|
-| 분류 데이터     | `../data/`      | `churn_100'.csv`<br/>`churn_50'.csv`                                                |                                                    |
-| 모델 파일      | `./models/`     | `모델명.py`                                                                            | `DecisionTransformer.py`                           |
-| 평가 결과      | `../data/eval/` | `모델명_100_eval.json`<br/>`모델명_50_eval.json`                                    | `DecisionTransformer_100_eval.json`                |
-| AUC-ROC 결과 | `../data/eval/` | `모델명_100_auc_roc.parquet`<br/>`모델명_50_auc_roc.parquet`                         | `DecisionTransformer_100_auc_roc.parquet` |
+| 구분 | 위치 | 파일명 규칙 | 예시 |
+|---|---|---|---|
+| 분류 데이터 | `data/processed/` | `churn_preprocessed_full.csv`<br>`churn_preprocessed_pct50.csv` | |
+| 모델 파일 | `models/` | `모델명_실험라벨_pipeline.joblib` | `knn_100_pipeline.joblib` |
+| 통합 평가 결과 | `data/results/` | `result_data.json` | 모든 모델·실험 결과를 한 파일에 저장 |
+| AUC-ROC 원천 데이터 | `data/results/roc/` | `모델명_실험라벨_auc_roc.parquet` | `xgboost_50_auc_roc.parquet` |
 
 #### 파일명 형식
 
-* `모델명`
-* `모델명_100_eval.json`
-* `모델명_100_auc_roc.parquet`
+* `result_data.json`
+* `모델명_실험라벨_auc_roc.parquet`
 
-  * `100` : 데이터 100%
-  * `50` : 데이터 50%
+  * KNN·Logistic Regression의 `100`/`50`: 전체 피처 / 중요도 상위 50% 피처
+  * XGBoost의 `100`/`50`: 학습 데이터 100% / 50%
 
 #### 경로 규칙
 
-* 모델 파일은 `./models/`에 생성합니다.
-* 모델에서 데이터를 사용할 경우 `../data` 경로를 사용합니다.
-* 평가 결과(`eval.json`)와 성능 결과(`auc_roc.parquet`)는 모두 `../data/eval`에 저장합니다.
+* 모델 파일과 메타데이터는 `models/`에 생성합니다.
+* 모든 모델의 최신 평가 결과는 `data/results/result_data.json`에 통합 저장합니다.
+* ROC 그래프용 원천 데이터만 `data/results/roc/`에 모델·실험 라벨별 Parquet로 저장합니다.
 
 ### 데이터 저장
 * 실행 시간 (`total_time_sec`)
@@ -306,41 +305,31 @@ main
 #### 저장 코드 예시
 
 ```python
-# 속도 계산
-total_time
-avg_latency_ms = (total_time / len(y_true)) * 1000
-
-# 컨퓨전 매트릭스 계산 (임계값 0.5 기준)
-y_pred = (y_scores >= 0.5).astype(int)
-cm = confusion_matrix(y_true, y_pred)
-# [주의] sklearn confusion_matrix는 [[TN, FP], [FN, TP]] 순서입니다.
-cm_list = cm.tolist() # JSON 저장을 위해 넘파이 배열을 파이썬 리스트로 변환
-
-# AUC 수치 계산
-auc_value = roc_auc_score(y_true, y_scores)
+# `metrics`에는 accuracy, precision, recall, f1, roc_auc, pr_auc,
+# confusion_matrix, total_samples, average_inference_ms가 들어 있다고 가정합니다.
+# `threshold`와 `total_time`은 학습·평가 단계에서 계산한 값입니다.
+from src.common.results import roc_data_path, upsert_result
 
 # 파케이는 AUC 그래프 그리기용으로 원천 데이터만 저장
 df_roc = pd.DataFrame({"y_true": y_true, "y_score": y_scores})
+model_key = "knn"
+model_name = "KNN"
+label = "100"
+roc_path = roc_data_path(model_key, label)
+roc_path.parent.mkdir(parents=True, exist_ok=True)
+df_roc.to_parquet(roc_path, index=False)
 
-summary_data = {
-    "performance": {
-        "total_time_sec": total_time,
-        "avg_latency_ms": avg_latency_ms,
-        "total_samples": len(y_true)
-    },
-    "confusion_matrix": cm.tolist(),
-    "auc_score": auc_value
-}
-
-model_name = "DecisionTransformer" 
-percent = "100"
-save_path = "../data" 
-
-with open(f"{save_path}/{model_name}_{percent}_eval.json", "w", encoding="utf-8") as f: 
-  json.dump(summary_data, f, indent=4, ensure_ascii=False) 
-  
-df_roc.to_parquet( 
-  f"{save_path}/{model_name}_auc_roc.parquet", index=False )
+# model_key와 label 조합의 최신 실행 결과만 갱신합니다.
+upsert_result(
+    model_key=model_key,
+    model_name=model_name,
+    label=label,
+    experiment={"comparison_axis": "feature_set", "feature_set": "full"},
+    metrics=metrics,
+    threshold=threshold,
+    total_time_sec=total_time,
+    artifacts={"roc_source": str(roc_path)},
+)
 ```
 ---
 
@@ -373,8 +362,6 @@ python src/models/train_knn_classifier.py --dataset pct50
 python src/models/train_logistic_regression.py --dataset full
 python src/models/train_logistic_regression.py --dataset pct50
 ```
-
-
 
 
 

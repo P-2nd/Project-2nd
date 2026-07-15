@@ -1,7 +1,7 @@
 {
   "model": "XGBoost",
   "training_fraction": 0.5,
-  "input_path": "/Users/jinho/Desktop/SKN/SKN_33/2nd/Project-2nd/data/processed/churn_preprocessed_full.csv",
+  "input_path": "/Users/choejiheum/SKN_AI/Project-2nd/data/processed/churn_preprocessed_full.csv",
   "rows": {
     "train": 320000,
     "validation": 160000,
@@ -58,16 +58,16 @@
   },
   "scale_pos_weight": null,
   "early_stopping_rounds": 50,
-  "best_iteration": 86,
+  "best_iteration": 108,
   "threshold_strategy": "f1",
-  "threshold_from_validation": 0.30258363485336304,
-  "training_seconds": 3.2346351250000005,
-  "total_seconds": 3.4960612090000005,
-  "python_version": "3.9.6",
+  "threshold_from_validation": 0.30719873309135437,
+  "training_seconds": 19.861492675998306,
+  "total_seconds": 22.005117618999066,
+  "python_version": "3.12.12",
   "artifacts": {
     "pipeline": "models/xgboost_50_pipeline.joblib",
     "metadata": "models/xgboost_50_metadata.json",
-    "metrics": "data/evaluation/XGBoost_50_eval.json",
-    "roc_source": "data/evaluation/XGBoost_50_auc_roc.parquet"
+    "result_data": "data/results/result_data.json",
+    "roc_source": "data/results/roc/xgboost_50_auc_roc.parquet"
   }
 }

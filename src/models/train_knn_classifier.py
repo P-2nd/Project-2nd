@@ -38,7 +38,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import PROCESSED_FULL_DATA_PATH, PROCESSED_PCT50_DATA_PATH
+from src.common.results import roc_data_path, upsert_result
+from src.config import PROCESSED_FULL_DATA_PATH, PROCESSED_PCT50_DATA_PATH, RESULT_DATA_PATH
 
 CONFIG_PATH = PROJECT_ROOT / "configs" / "model_params.yaml"
 MODEL_NAME = "KNN"
@@ -122,13 +123,13 @@ def resolve_input_path(args: argparse.Namespace) -> Path:
 
 
 def artifact_paths(dataset: str) -> tuple[str, Path, Path, Path]:
-    """입력 피처 세트별로 독립적인 모델·메타데이터·평가 경로를 만든다."""
+    """입력 피처 세트별 모델·메타데이터·ROC 데이터 경로를 만든다."""
     label = DATASET_LABELS[dataset]
     return (
         label,
         PROJECT_ROOT / "models" / f"knn_{label}_pipeline.joblib",
         PROJECT_ROOT / "models" / f"knn_{label}_metadata.json",
-        PROJECT_ROOT / "data" / "evaluation" / f"{MODEL_NAME}_{label}_eval.json",
+        roc_data_path("knn", label),
     )
 
 
@@ -257,6 +258,7 @@ def print_result_summary(
 
 
 def main() -> None:
+    started_at = time.perf_counter()
     args = parse_args()
     config = load_config()
     knn_config = config["knn"]
@@ -264,7 +266,7 @@ def main() -> None:
     target_column = config["target_column"]
     max_rows = args.max_rows or int(knn_config["max_rows"])
     input_path = resolve_input_path(args)
-    dataset_label, model_path, metadata_path, evaluation_path = artifact_paths(args.dataset)
+    dataset_label, model_path, metadata_path, roc_path = artifact_paths(args.dataset)
 
     with ProgressIndicator(f"전처리 CSV에서 최대 {max_rows:,}행 표본 추출"):
         frame = load_even_sample(input_path, max_rows, random_state)
@@ -286,7 +288,8 @@ def main() -> None:
         raise ValueError(f"Target 컬럼 '{target_column}'이 CSV에 없습니다.")
 
     with ProgressIndicator("전처리 피처 Train/Validation/Test 분할"):
-        X = frame.drop(columns=[target_column])
+        # X = frame.drop(columns=[target_column])
+        X = frame.drop(columns=[target_column, "PT_Session_Count"])
         y = frame[target_column].astype(int)
         non_numeric_columns = X.select_dtypes(exclude=["number", "bool"]).columns.tolist()
         if non_numeric_columns:
@@ -334,12 +337,19 @@ def main() -> None:
         test_probabilities = pipeline.predict_proba(X_test)[:, 1]
     inference_seconds = inference_timer.elapsed_seconds
     metrics = evaluate(y_test, test_probabilities, threshold, inference_seconds)
+    total_seconds = time.perf_counter() - started_at
 
     with ProgressIndicator("모델과 평가 결과 파일 저장"):
         model_path.parent.mkdir(parents=True, exist_ok=True)
-        evaluation_path.parent.mkdir(parents=True, exist_ok=True)
+        roc_path.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(pipeline, model_path)
 
+        artifacts = {
+            "pipeline": str(model_path.relative_to(PROJECT_ROOT)),
+            "metadata": str(metadata_path.relative_to(PROJECT_ROOT)),
+            "result_data": str(RESULT_DATA_PATH.relative_to(PROJECT_ROOT)),
+            "roc_source": str(roc_path.relative_to(PROJECT_ROOT)),
+        }
         metadata = {
             "model": "KNeighborsClassifier",
             "purpose": "small-sample KNN model using EDA-preprocessed features",
@@ -353,22 +363,32 @@ def main() -> None:
             "random_state": random_state,
             "threshold_from_validation": threshold,
             "preprocessing": "Applied upstream in the input CSV; this script only median-imputes.",
-            "artifacts": {
-                "pipeline": str(model_path.relative_to(PROJECT_ROOT)),
-                "metadata": str(metadata_path.relative_to(PROJECT_ROOT)),
-                "metrics": str(evaluation_path.relative_to(PROJECT_ROOT)),
-            },
+            "artifacts": artifacts,
         }
         metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
-        evaluation_path.write_text(
-            json.dumps({"metadata": metadata, "test_metrics": metrics}, ensure_ascii=False, indent=2),
-            encoding="utf-8",
+        pd.DataFrame({"y_true": y_test.to_numpy(), "y_score": test_probabilities}).to_parquet(
+            roc_path, index=False
+        )
+        upsert_result(
+            model_key="knn",
+            model_name=MODEL_NAME,
+            label=dataset_label,
+            experiment={
+                "comparison_axis": "feature_set",
+                "feature_set": args.dataset if args.input is None else "custom",
+                "feature_count": int(X.shape[1]),
+            },
+            metrics=metrics,
+            threshold=threshold,
+            total_time_sec=total_seconds,
+            artifacts=artifacts,
         )
 
     print_result_summary(dataset_label, len(frame), y_test, threshold, metrics)
     print("\n[저장 파일]")
     print(f"- 모델 Pipeline: {model_path.relative_to(PROJECT_ROOT)}")
-    print(f"- 평가 결과: {evaluation_path.relative_to(PROJECT_ROOT)}")
+    print(f"- 통합 평가 결과: {RESULT_DATA_PATH.relative_to(PROJECT_ROOT)}")
+    print(f"- ROC 원천 데이터: {roc_path.relative_to(PROJECT_ROOT)}")
 
 
 if __name__ == "__main__":

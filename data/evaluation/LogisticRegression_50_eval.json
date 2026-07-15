@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "model": "LogisticRegression",
+    "purpose": "logistic-regression churn model using EDA-preprocessed features",
+    "input_path": "data/processed/churn_preprocessed_pct50.csv",
+    "input_dataset": "pct50",
+    "dataset_label": "50",
+    "sample_rows": 30000,
+    "features": [
+      "Late_Payment_Count",
+      "Monthly_Visits",
+      "PT_Session_Count",
+      "Start_Year",
+      "Membership_Days",
+      "Group_Class_Attendance",
+      "Avg_Equipment_Wait_Time_Min",
+      "Age",
+      "Supplement_Usage_No Protein Supplements",
+      "Cardio_Preference_Rowing",
+      "Avg_Workout_Duration_Min"
+    ],
+    "target_column": "Churn",
+    "target_meaning": {
+      "0": "retained",
+      "1": "churned"
+    },
+    "random_state": 42,
+    "threshold_from_validation": 0.45695377579192203,
+    "preprocessing": "Applied upstream in the input CSV; this script imputes and scales numeric features within the training pipeline.",
+    "artifacts": {
+      "pipeline": "models/logistic_regression_50_pipeline.joblib",
+      "metadata": "models/logistic_regression_50_metadata.json",
+      "metrics": "data/evaluation/LogisticRegression_50_eval.json"
+    }
+  },
+  "test_metrics": {
+    "accuracy": 0.5985,
+    "precision": 0.4835873388042204,
+    "recall": 0.718328254244667,
+    "f1": 0.5780346820809249,
+    "roc_auc": 0.6766440652021664,
+    "pr_auc": 0.5523686956866469,
+    "confusion_matrix": [
+      [
+        1941,
+        1762
+      ],
+      [
+        647,
+        1650
+      ]
+    ],
+    "total_samples": 6000,
+    "total_inference_seconds": 0.012074038000719156,
+    "average_inference_ms": 0.002012339666786526
+  }
+}

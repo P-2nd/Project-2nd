@@ -78,12 +78,6 @@ TRAINING_FRACTIONS = (1.0, 0.5)
 DEFAULT_CLASSIFICATION_THRESHOLD = 0.5
 
 
-# KNN 실험 산출물
-KNN_MODEL_PATH = MODELS_DIR / "knn_pipeline.joblib"
-KNN_METADATA_PATH = MODELS_DIR / "knn_metadata.json"
-KNN_METRICS_PATH = EVALUATION_DATA_DIR / "knn_metrics.json"
-
-
 # 학습 횟수 통일 상수 
 TRAIN_LOOP_COUNT = 500
 
@@ -97,9 +91,6 @@ __all__ = [
     "ENV_PATH",
     "EVALUATION_DATA_DIR",
     "ID_COLUMN",
-    "KNN_METADATA_PATH",
-    "KNN_METRICS_PATH",
-    "KNN_MODEL_PATH",
     "MODELS_DIR",
     "MODEL_PARAMS_PATH",
     "NOTEBOOKS_DIR",
@@ -117,5 +108,6 @@ __all__ = [
     "TARGET_LABELS",
     "TESTS_DIR",
     "TEST_SIZE",
+    "TRAIN_LOOP_COUNT",
     "TRAINING_FRACTIONS",
 ]

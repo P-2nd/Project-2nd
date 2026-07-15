@@ -1,14 +1,15 @@
-"""EDA 기준 전처리와 Logistic Regression으로 회원 이탈을 예측한다.
+"""전처리된 피처 CSV로 Logistic Regression 이탈 예측 모델을 학습한다.
 
-원본 CSV에서 균등 표본을 추출하고, 학습 데이터에만 전처리기를 fit한다.
+KNN과 동일하게 전체 피처(100%)와 중요도 상위 50% 피처를 각각 학습·평가한다.
 검증 데이터의 F1 점수가 최대가 되는 임계값을 선택한 후 별도 Test 데이터로
-성능을 평가해 KNN 기준 모델과 같은 기준으로 비교할 수 있게 한다.
+성능을 평가해 두 모델을 같은 기준으로 비교할 수 있게 한다.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import sys
 import threading
 import time
 from pathlib import Path
@@ -33,27 +34,22 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, RobustScaler, StandardScaler
+from sklearn.preprocessing import RobustScaler, StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = PROJECT_ROOT / "configs" / "model_params.yaml"
-DEFAULT_INPUT = PROJECT_ROOT / "data" / "raw" / "gym_churn_1M_dataset.csv"
-MODEL_PATH = PROJECT_ROOT / "models" / "logistic_regression_pipeline.joblib"
-METADATA_PATH = PROJECT_ROOT / "models" / "logistic_regression_metadata.json"
-EVALUATION_PATH = PROJECT_ROOT / "data" / "evaluation" / "logistic_regression_metrics.json"
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-ID_COLUMN = "Member_ID"
-DATE_COLUMN = "Membership_Start_Date"
-DROP_COLUMNS = [
-    ID_COLUMN,
-    "Treadmill_Avg_Speed_Kmh",
-    "Treadmill_Avg_Incline_Pct",
-    "Gender",
-    "Membership_Type",
-    "Peak_Hour_Preference",
-    "Monthly_Fee",
-]
-CATEGORICAL_COLUMNS = ["Cardio_Preference", "Supplement_Usage", "Profile_Type"]
+from src.config import PROCESSED_FULL_DATA_PATH, PROCESSED_PCT50_DATA_PATH
+
+CONFIG_PATH = PROJECT_ROOT / "configs" / "model_params.yaml"
+MODEL_NAME = "LogisticRegression"
+MODEL_DISPLAY_NAME = "Logistic Regression"
+DEFAULT_INPUTS = {
+    "full": PROCESSED_FULL_DATA_PATH,
+    "pct50": PROCESSED_PCT50_DATA_PATH,
+}
+DATASET_LABELS = {"full": "100", "pct50": "50"}
 STANDARD_COLUMNS = [
     "Age",
     "Monthly_Visits",
@@ -103,10 +99,16 @@ class ProgressIndicator:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
+        "--dataset",
+        choices=("full", "pct50"),
+        default="full",
+        help="전처리 피처 세트: full(전체 피처) 또는 pct50(중요도 상위 50%% 피처).",
+    )
+    parser.add_argument(
         "--input",
         type=Path,
-        default=DEFAULT_INPUT,
-        help="원본 CSV 경로 (기본값: data/raw/gym_churn_1M_dataset.csv)",
+        default=None,
+        help="사용할 전처리 CSV 경로. 지정하면 --dataset보다 우선합니다.",
     )
     parser.add_argument(
         "--max-rows",
@@ -123,16 +125,19 @@ def load_config() -> dict[str, Any]:
 
 
 def load_even_sample(path: Path, max_rows: int, random_state: int) -> pd.DataFrame:
-    """대용량 CSV를 청크 단위로 읽어 최대 ``max_rows``개를 균등 표본으로 모은다."""
+    """대용량 전처리 CSV를 청크 단위로 읽어 균등 표본을 모은다."""
     if not path.is_file():
         raise FileNotFoundError(
-            f"원본 CSV를 찾을 수 없습니다: {path}\n"
-            "파일을 data/raw/gym_churn_1M_dataset.csv에 두거나 --input 경로를 지정하세요."
+            f"전처리 CSV를 찾을 수 없습니다: {path}\n"
+            "전처리 스크립트로 data/processed CSV를 생성하거나 --input 경로를 지정하세요."
         )
 
     chunk_size = 100_000
+    columns = pd.read_csv(path, nrows=0).columns.tolist()
+    if not columns:
+        raise ValueError(f"CSV 헤더가 비어 있습니다: {path}")
     total_rows = sum(
-        len(chunk) for chunk in pd.read_csv(path, usecols=[ID_COLUMN], chunksize=chunk_size)
+        len(chunk) for chunk in pd.read_csv(path, usecols=[columns[0]], chunksize=chunk_size)
     )
     if total_rows <= max_rows:
         return pd.read_csv(path)
@@ -169,33 +174,26 @@ def resolve_target_column(frame: pd.DataFrame, configured_target: str) -> str:
     raise ValueError(f"Target 컬럼 '{configured_target}'이 CSV에 없습니다.")
 
 
-def add_eda_features(frame: pd.DataFrame) -> pd.DataFrame:
-    """EDA에서 확정한 컬럼 선택, 결측치 의미 보존, 가입일 파생변수를 적용한다."""
-    result = frame.copy()
-    missing_columns = [column for column in DROP_COLUMNS if column not in result]
-    if missing_columns:
-        raise ValueError(f"EDA 전처리에 필요한 컬럼이 CSV에 없습니다: {missing_columns}")
-
-    result["Cardio_Preference"] = result["Cardio_Preference"].fillna("No Preference")
-    result["Supplement_Usage"] = result["Supplement_Usage"].fillna("No Protein Supplements")
-
-    dates = pd.to_datetime(result[DATE_COLUMN], errors="coerce")
-    reference_date = dates.max()
-    if pd.isna(reference_date):
-        raise ValueError(f"'{DATE_COLUMN}'에 해석 가능한 날짜가 없습니다.")
-    result["Start_Year"] = dates.dt.year
-    result["Start_Month"] = dates.dt.month
-    result["Start_Weekday"] = dates.dt.dayofweek
-    result["Membership_Days"] = (reference_date - dates).dt.days
-
-    return result.drop(columns=DROP_COLUMNS + [DATE_COLUMN])
-
-
 def display_input_path(path: Path) -> str:
     try:
         return str(path.resolve().relative_to(PROJECT_ROOT))
     except ValueError:
         return f"external source supplied at runtime: {path.name}"
+
+
+def resolve_input_path(args: argparse.Namespace) -> Path:
+    return args.input if args.input is not None else DEFAULT_INPUTS[args.dataset]
+
+
+def artifact_paths(dataset: str) -> tuple[str, Path, Path, Path]:
+    """입력 피처 세트별로 독립적인 모델·메타데이터·평가 경로를 만든다."""
+    label = DATASET_LABELS[dataset]
+    return (
+        label,
+        PROJECT_ROOT / "models" / f"logistic_regression_{label}_pipeline.joblib",
+        PROJECT_ROOT / "models" / f"logistic_regression_{label}_metadata.json",
+        PROJECT_ROOT / "data" / "evaluation" / f"{MODEL_NAME}_{label}_eval.json",
+    )
 
 
 def choose_f1_threshold(y_true: pd.Series, probabilities: np.ndarray) -> float:
@@ -225,17 +223,21 @@ def evaluate(
 
 
 def print_result_summary(
-    sample_rows: int, y_test: pd.Series, threshold: float, metrics: dict[str, Any]
+    dataset_label: str,
+    sample_rows: int,
+    y_test: pd.Series,
+    threshold: float,
+    metrics: dict[str, Any],
 ) -> None:
     """평가 수치를 발표·학습에 바로 활용할 수 있도록 한글로 출력한다."""
     true_negative, false_positive = metrics["confusion_matrix"][0]
     false_negative, true_positive = metrics["confusion_matrix"][1]
     majority_class_accuracy = max(float((y_test == 0).mean()), float((y_test == 1).mean()))
 
-    print("\n[Logistic Regression 학습 완료]")
+    print(f"\n[{MODEL_DISPLAY_NAME} {dataset_label}% 모델 학습 완료]")
     print(f"- 사용 표본: {sample_rows:,}명")
     print(f"- Test 데이터: {metrics['total_samples']:,}명")
-    print("- EDA 기반 컬럼 선택·결측치 처리·날짜 파생변수·스케일링을 적용했습니다.")
+    print("- EDA 전처리·피처 선택 결과를 사용하고, 학습 구간 기준으로 다시 스케일링했습니다.")
     print("\n[모델 판단 기준]")
     print(
         f"- Validation F1 최대 임계값: {threshold:.4f} "
@@ -264,9 +266,9 @@ def print_result_summary(
     )
     print(
         f"- 다수 클래스만 예측하는 비교 기준 Accuracy는 {majority_class_accuracy * 100:.1f}%인데, "
-        f"현재 Logistic Regression Accuracy는 {metrics['accuracy'] * 100:.1f}%입니다."
+        f"현재 {MODEL_DISPLAY_NAME} Accuracy는 {metrics['accuracy'] * 100:.1f}%입니다."
     )
-    print("- Logistic Regression의 이탈 탐지 성향을 다른 모델과 함께 비교해 최종 모델을 선정합니다.")
+    print(f"- {MODEL_DISPLAY_NAME}의 이탈 탐지 성향을 다른 모델과 함께 비교해 최종 모델을 선정합니다.")
 
 
 def main() -> None:
@@ -275,15 +277,22 @@ def main() -> None:
     logistic_config = config["logistic_regression"]
     random_state = int(config["random_state"])
     max_rows = args.max_rows or int(logistic_config["max_rows"])
+    input_path = resolve_input_path(args)
+    dataset_label, model_path, metadata_path, evaluation_path = artifact_paths(args.dataset)
 
-    with ProgressIndicator(f"원본 CSV에서 최대 {max_rows:,}행 표본 추출"):
-        raw_frame = load_even_sample(args.input, max_rows, random_state)
-    target_column = resolve_target_column(raw_frame, config["target_column"])
+    with ProgressIndicator(f"전처리 CSV에서 최대 {max_rows:,}행 표본 추출"):
+        frame = load_even_sample(input_path, max_rows, random_state)
+    target_column = resolve_target_column(frame, config["target_column"])
 
-    with ProgressIndicator("EDA 전처리 및 Train/Validation/Test 분할"):
-        frame = add_eda_features(raw_frame)
+    with ProgressIndicator("전처리 피처 Train/Validation/Test 분할"):
         X = frame.drop(columns=[target_column])
         y = frame[target_column].astype(int)
+        non_numeric_columns = X.select_dtypes(exclude=["number", "bool"]).columns.tolist()
+        if non_numeric_columns:
+            raise ValueError(
+                "전처리 CSV에는 숫자형 피처만 있어야 합니다. "
+                f"다음 컬럼을 확인하세요: {non_numeric_columns}"
+            )
         X_train_validation, X_test, y_train_validation, y_test = train_test_split(
             X,
             y,
@@ -299,40 +308,39 @@ def main() -> None:
             stratify=y_train_validation,
         )
 
-    preprocessor = ColumnTransformer(
-        transformers=[
-            (
-                "standard_numeric",
-                Pipeline(
-                    steps=[
-                        ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
-                        ("scaler", StandardScaler()),
-                    ]
-                ),
-                STANDARD_COLUMNS,
+    standard_columns = [column for column in STANDARD_COLUMNS if column in X]
+    robust_columns = [column for column in ROBUST_COLUMNS if column in X]
+    remaining_columns = [
+        column for column in X.columns if column not in standard_columns + robust_columns
+    ]
+    transformers = [
+        (
+            "standard_numeric",
+            Pipeline(
+                steps=[
+                    ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
+                    ("scaler", StandardScaler()),
+                ]
             ),
-            (
-                "robust_numeric",
-                Pipeline(
-                    steps=[
-                        ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
-                        ("scaler", RobustScaler()),
-                    ]
-                ),
-                ROBUST_COLUMNS,
+            standard_columns,
+        ),
+        (
+            "robust_numeric",
+            Pipeline(
+                steps=[
+                    ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
+                    ("scaler", RobustScaler()),
+                ]
             ),
-            (
-                "categorical",
-                Pipeline(
-                    steps=[
-                        ("imputer", SimpleImputer(strategy="constant", fill_value="Missing")),
-                        ("encoder", OneHotEncoder(drop="first", handle_unknown="ignore")),
-                    ]
-                ),
-                CATEGORICAL_COLUMNS,
-            ),
-        ]
-    )
+            robust_columns,
+        ),
+        (
+            "remaining_numeric",
+            SimpleImputer(strategy="median", add_indicator=True),
+            remaining_columns,
+        ),
+    ]
+    preprocessor = ColumnTransformer(transformers=transformers)
     pipeline = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
@@ -358,41 +366,39 @@ def main() -> None:
     metrics = evaluate(y_test, test_probabilities, threshold, inference_timer.elapsed_seconds)
 
     with ProgressIndicator("모델과 평가 결과 파일 저장"):
-        MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-        EVALUATION_PATH.parent.mkdir(parents=True, exist_ok=True)
-        joblib.dump(pipeline, MODEL_PATH)
+        model_path.parent.mkdir(parents=True, exist_ok=True)
+        evaluation_path.parent.mkdir(parents=True, exist_ok=True)
+        joblib.dump(pipeline, model_path)
         metadata = {
-            "model": "LogisticRegression",
-            "purpose": "EDA-based logistic-regression churn model",
-            "input_path": display_input_path(args.input),
+            "model": MODEL_NAME,
+            "purpose": "logistic-regression churn model using EDA-preprocessed features",
+            "input_path": display_input_path(input_path),
+            "input_dataset": args.dataset if args.input is None else "custom",
+            "dataset_label": dataset_label,
             "sample_rows": int(len(frame)),
             "features": X.columns.tolist(),
             "target_column": target_column,
             "target_meaning": {"0": "retained", "1": "churned"},
             "random_state": random_state,
             "threshold_from_validation": threshold,
-            "preprocessing": {
-                "dropped_columns": DROP_COLUMNS,
-                "date_features": ["Start_Year", "Start_Month", "Start_Weekday", "Membership_Days"],
-                "standard_scaled_columns": STANDARD_COLUMNS,
-                "robust_scaled_columns": ROBUST_COLUMNS,
-                "one_hot_columns": CATEGORICAL_COLUMNS,
-            },
+            "preprocessing": "Applied upstream in the input CSV; this script imputes and "
+            "scales numeric features within the training pipeline.",
             "artifacts": {
-                "pipeline": str(MODEL_PATH.relative_to(PROJECT_ROOT)),
-                "metrics": str(EVALUATION_PATH.relative_to(PROJECT_ROOT)),
+                "pipeline": str(model_path.relative_to(PROJECT_ROOT)),
+                "metadata": str(metadata_path.relative_to(PROJECT_ROOT)),
+                "metrics": str(evaluation_path.relative_to(PROJECT_ROOT)),
             },
         }
-        METADATA_PATH.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
-        EVALUATION_PATH.write_text(
+        metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
+        evaluation_path.write_text(
             json.dumps({"metadata": metadata, "test_metrics": metrics}, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
 
-    print_result_summary(len(frame), y_test, threshold, metrics)
+    print_result_summary(dataset_label, len(frame), y_test, threshold, metrics)
     print("\n[저장 파일]")
-    print(f"- 모델 Pipeline: {MODEL_PATH.relative_to(PROJECT_ROOT)}")
-    print(f"- 평가 결과: {EVALUATION_PATH.relative_to(PROJECT_ROOT)}")
+    print(f"- 모델 Pipeline: {model_path.relative_to(PROJECT_ROOT)}")
+    print(f"- 평가 결과: {evaluation_path.relative_to(PROJECT_ROOT)}")
 
 
 if __name__ == "__main__":

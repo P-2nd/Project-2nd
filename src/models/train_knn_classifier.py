@@ -1,14 +1,15 @@
-"""작은 표본으로 KNN 분류 기반 이탈 예측 흐름을 확인하는 모델.
+"""전처리된 피처 CSV로 KNN 분류 기반 이탈 예측 흐름을 확인하는 모델.
 
 KNN은 100만 행 전체 데이터에서 예측 비용이 매우 크므로, 이 스크립트는
-기본적으로 3만 행의 균등 표본만 사용한다. 최종 모델을 고르기 위한 실험이
-아니며, 전처리·분할·평가·저장 전체 흐름을 검증하는 용도다.
+기본적으로 3만 행의 균등 표본만 사용한다. 입력은 EDA 전처리와 피처 선택을
+마친 ``data/processed`` CSV이며, 이 스크립트는 같은 전처리를 반복하지 않는다.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import sys
 import threading
 import time
 from pathlib import Path
@@ -18,7 +19,6 @@ import joblib
 import numpy as np
 import pandas as pd
 import yaml
-from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import (
     accuracy_score,
@@ -33,39 +33,21 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, RobustScaler, StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = PROJECT_ROOT / "configs" / "model_params.yaml"
-DEFAULT_INPUT = PROJECT_ROOT / "data" / "raw" / "gym_churn_1M_dataset.csv"
-MODEL_PATH = PROJECT_ROOT / "models" / "knn_pipeline.joblib"
-METADATA_PATH = PROJECT_ROOT / "models" / "knn_metadata.json"
-EVALUATION_PATH = PROJECT_ROOT / "data" / "evaluation" / "knn_metrics.json"
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-ID_COLUMN = "Member_ID"
-DATE_COLUMN = "Membership_Start_Date"
-DROP_COLUMNS = [
-    ID_COLUMN,
-    "Treadmill_Avg_Speed_Kmh",
-    "Treadmill_Avg_Incline_Pct",
-    "Gender",
-    "Membership_Type",
-    "Peak_Hour_Preference",
-    "Monthly_Fee",
-]
-CATEGORICAL_COLUMNS = ["Cardio_Preference", "Supplement_Usage", "Profile_Type"]
-STANDARD_COLUMNS = [
-    "Age",
-    "Monthly_Visits",
-    "Avg_Workout_Duration_Min",
-    "Group_Class_Attendance",
-    "Avg_Equipment_Wait_Time_Min",
-    "Start_Year",
-    "Start_Month",
-    "Start_Weekday",
-    "Membership_Days",
-]
-ROBUST_COLUMNS = ["PT_Session_Count", "Late_Payment_Count"]
+from src.config import PROCESSED_FULL_DATA_PATH, PROCESSED_PCT50_DATA_PATH
+
+CONFIG_PATH = PROJECT_ROOT / "configs" / "model_params.yaml"
+MODEL_NAME = "KNN"
+DEFAULT_INPUTS = {
+    "full": PROCESSED_FULL_DATA_PATH,
+    "pct50": PROCESSED_PCT50_DATA_PATH,
+}
+DATASET_LABELS = {"full": "100", "pct50": "50"}
+
 
 
 class ProgressIndicator:
@@ -110,10 +92,16 @@ class ProgressIndicator:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
+        "--dataset",
+        choices=("full", "pct50"),
+        default="full",
+        help="전처리 피처 세트: full(전체 피처) 또는 pct50(중요도 상위 50%% 피처).",
+    )
+    parser.add_argument(
         "--input",
         type=Path,
-        default=DEFAULT_INPUT,
-        help="원본 CSV 경로 (기본값: data/raw/gym_churn_1M_dataset.csv)",
+        default=None,
+        help="사용할 전처리 CSV 경로. 지정하면 --dataset보다 우선합니다.",
     )
     parser.add_argument(
         "--max-rows",
@@ -129,17 +117,35 @@ def load_config() -> dict[str, Any]:
         return yaml.safe_load(file)
 
 
+def resolve_input_path(args: argparse.Namespace) -> Path:
+    return args.input if args.input is not None else DEFAULT_INPUTS[args.dataset]
+
+
+def artifact_paths(dataset: str) -> tuple[str, Path, Path, Path]:
+    """입력 피처 세트별로 독립적인 모델·메타데이터·평가 경로를 만든다."""
+    label = DATASET_LABELS[dataset]
+    return (
+        label,
+        PROJECT_ROOT / "models" / f"knn_{label}_pipeline.joblib",
+        PROJECT_ROOT / "models" / f"knn_{label}_metadata.json",
+        PROJECT_ROOT / "data" / "evaluation" / f"{MODEL_NAME}_{label}_eval.json",
+    )
+
+
 def load_even_sample(path: Path, max_rows: int, random_state: int) -> pd.DataFrame:
     """대용량 CSV를 청크 단위로 읽어 최대 ``max_rows``개를 균등 표본으로 모은다."""
     if not path.is_file():
         raise FileNotFoundError(
-            f"원본 CSV를 찾을 수 없습니다: {path}\n"
-            "파일을 data/raw/gym_churn_1M_dataset.csv에 두거나 --input 경로를 지정하세요."
+            f"전처리 CSV를 찾을 수 없습니다: {path}\n"
+            "전처리 스크립트로 data/processed CSV를 생성하거나 --input 경로를 지정하세요."
         )
 
     chunk_size = 100_000
+    columns = pd.read_csv(path, nrows=0).columns.tolist()
+    if not columns:
+        raise ValueError(f"CSV 헤더가 비어 있습니다: {path}")
     total_rows = sum(
-        len(chunk) for chunk in pd.read_csv(path, usecols=[ID_COLUMN], chunksize=chunk_size)
+        len(chunk) for chunk in pd.read_csv(path, usecols=[columns[0]], chunksize=chunk_size)
     )
 
     if total_rows <= max_rows:
@@ -159,30 +165,6 @@ def load_even_sample(path: Path, max_rows: int, random_state: int) -> pd.DataFra
             selected_rows += sample_size
 
     return pd.concat(samples, ignore_index=True)
-
-    """학습 시점에도 알 수 있는 가입일에서 단순 달력 Feature를 만든다."""
-
-
-def add_eda_features(frame: pd.DataFrame) -> pd.DataFrame:
-    """EDA에서 확정한 결측치 처리, 컬럼 선택, 가입일 파생변수를 적용한다."""
-    result = frame.copy()
-    missing_columns = [column for column in DROP_COLUMNS if column not in result]
-    if missing_columns:
-        raise ValueError(f"EDA 전처리에 필요한 컬럼이 CSV에 없습니다: {missing_columns}")
-
-    result["Cardio_Preference"] = result["Cardio_Preference"].fillna("No Preference")
-    result["Supplement_Usage"] = result["Supplement_Usage"].fillna("No Protein Supplements")
-    dates = pd.to_datetime(result[DATE_COLUMN], errors="coerce")
-    reference_date = dates.max()
-    if pd.isna(reference_date):
-        raise ValueError(f"'{DATE_COLUMN}'에 해석 가능한 날짜가 없습니다.")
-    result["Start_Year"] = dates.dt.year
-    result["Start_Month"] = dates.dt.month
-    result["Start_Weekday"] = dates.dt.dayofweek
-    result["Membership_Days"] = (reference_date - dates).dt.days
-    return result.drop(columns=DROP_COLUMNS + [DATE_COLUMN])
-
-    """프로젝트 밖의 임시 입력 경로가 메타데이터에 남지 않게 한다."""
 
 
 def display_input_path(path: Path) -> str:
@@ -222,17 +204,21 @@ def evaluate(
 
 
 def print_result_summary(
-        sample_rows: int, y_test: pd.Series, threshold: float, metrics: dict[str, Any]
+        dataset_label: str,
+        sample_rows: int,
+        y_test: pd.Series,
+        threshold: float,
+        metrics: dict[str, Any],
 ) -> None:
     """평가 수치를 발표·학습에 바로 활용할 수 있도록 한글로 출력한다."""
     true_negative, false_positive = metrics["confusion_matrix"][0]
     false_negative, true_positive = metrics["confusion_matrix"][1]
     majority_class_accuracy = max(float((y_test == 0).mean()), float((y_test == 1).mean()))
 
-    print("\n[KNN 모델 학습 완료]")
+    print(f"\n[{MODEL_NAME} {dataset_label}% 모델 학습 완료]")
     print(f"- 사용 표본: {sample_rows:,}명")
     print(f"- Test 데이터: {metrics['total_samples']:,}명")
-    print("- 목적: 전처리·학습·평가 흐름을 확인하는 소규모 KNN 모델")
+    print("- 목적: EDA 전처리·피처 선택 결과를 사용한 소규모 KNN 모델")
 
     print("\n[모델 판단 기준]")
     print(
@@ -277,13 +263,15 @@ def main() -> None:
     random_state = int(config["random_state"])
     target_column = config["target_column"]
     max_rows = args.max_rows or int(knn_config["max_rows"])
+    input_path = resolve_input_path(args)
+    dataset_label, model_path, metadata_path, evaluation_path = artifact_paths(args.dataset)
 
-    with ProgressIndicator("원본 CSV에서 3만 행 표본 추출"):
-        raw_frame = load_even_sample(args.input, max_rows, random_state)
-    if target_column not in raw_frame:
+    with ProgressIndicator(f"전처리 CSV에서 최대 {max_rows:,}행 표본 추출"):
+        frame = load_even_sample(input_path, max_rows, random_state)
+    if target_column not in frame:
         matching_columns = [
             column
-            for column in raw_frame.columns
+            for column in frame.columns
             if column.casefold() == target_column.casefold()
         ]
         if len(matching_columns) == 1:
@@ -294,13 +282,18 @@ def main() -> None:
                 f"{matching_columns}"
             )
 
-    if target_column not in raw_frame:
+    if target_column not in frame:
         raise ValueError(f"Target 컬럼 '{target_column}'이 CSV에 없습니다.")
 
-    with ProgressIndicator("EDA 전처리 및 Train/Validation/Test 분할"):
-        frame = add_eda_features(raw_frame)
+    with ProgressIndicator("전처리 피처 Train/Validation/Test 분할"):
         X = frame.drop(columns=[target_column])
         y = frame[target_column].astype(int)
+        non_numeric_columns = X.select_dtypes(exclude=["number", "bool"]).columns.tolist()
+        if non_numeric_columns:
+            raise ValueError(
+                "전처리 CSV에는 숫자형 피처만 있어야 합니다. "
+                f"다음 컬럼을 확인하세요: {non_numeric_columns}"
+            )
 
         X_train_validation, X_test, y_train_validation, y_test = train_test_split(
             X,
@@ -317,43 +310,9 @@ def main() -> None:
             stratify=y_train_validation,
         )
 
-    preprocessor = ColumnTransformer(
-        transformers=[
-            (
-                "standard_numeric",
-                Pipeline(
-                    steps=[
-                        ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
-                        ("scaler", StandardScaler()),
-                    ]
-                ),
-                STANDARD_COLUMNS,
-            ),
-            (
-                "robust_numeric",
-                Pipeline(
-                    steps=[
-                        ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
-                        ("scaler", RobustScaler()),
-                    ]
-                ),
-                ROBUST_COLUMNS,
-            ),
-            (
-                "categorical",
-                Pipeline(
-                    steps=[
-                        ("imputer", SimpleImputer(strategy="constant", fill_value="Missing")),
-                        ("encoder", OneHotEncoder(drop="first", handle_unknown="ignore")),
-                    ]
-                ),
-                CATEGORICAL_COLUMNS,
-            ),
-        ]
-    )
     pipeline = Pipeline(
         steps=[
-            ("preprocessor", preprocessor),
+            ("imputer", SimpleImputer(strategy="median")),
             (
                 "model",
                 KNeighborsClassifier(
@@ -365,7 +324,7 @@ def main() -> None:
         ]
     )
 
-    with ProgressIndicator("전처리 Pipeline 및 KNN 모델 학습"):
+    with ProgressIndicator("결측값 보완 Pipeline 및 KNN 모델 학습"):
         pipeline.fit(X_train, y_train)
     with ProgressIndicator("Validation 예측 및 F1 임계값 선택"):
         validation_probabilities = pipeline.predict_proba(X_validation)[:, 1]
@@ -377,42 +336,39 @@ def main() -> None:
     metrics = evaluate(y_test, test_probabilities, threshold, inference_seconds)
 
     with ProgressIndicator("모델과 평가 결과 파일 저장"):
-        MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-        EVALUATION_PATH.parent.mkdir(parents=True, exist_ok=True)
-        joblib.dump(pipeline, MODEL_PATH)
+        model_path.parent.mkdir(parents=True, exist_ok=True)
+        evaluation_path.parent.mkdir(parents=True, exist_ok=True)
+        joblib.dump(pipeline, model_path)
 
         metadata = {
             "model": "KNeighborsClassifier",
-            "purpose": "small-sample KNN model; not a full 1M-row final-model experiment",
-            "input_path": display_input_path(args.input),
+            "purpose": "small-sample KNN model using EDA-preprocessed features",
+            "input_path": display_input_path(input_path),
+            "input_dataset": args.dataset if args.input is None else "custom",
+            "dataset_label": dataset_label,
             "sample_rows": int(len(frame)),
             "features": X.columns.tolist(),
             "target_column": target_column,
             "target_meaning": {"0": "retained", "1": "churned"},
             "random_state": random_state,
             "threshold_from_validation": threshold,
-            "preprocessing": {
-                "dropped_columns": DROP_COLUMNS,
-                "date_features": ["Start_Year", "Start_Month", "Start_Weekday", "Membership_Days"],
-                "standard_scaled_columns": STANDARD_COLUMNS,
-                "robust_scaled_columns": ROBUST_COLUMNS,
-                "one_hot_columns": CATEGORICAL_COLUMNS,
-            },
+            "preprocessing": "Applied upstream in the input CSV; this script only median-imputes.",
             "artifacts": {
-                "pipeline": str(MODEL_PATH.relative_to(PROJECT_ROOT)),
-                "metrics": str(EVALUATION_PATH.relative_to(PROJECT_ROOT)),
+                "pipeline": str(model_path.relative_to(PROJECT_ROOT)),
+                "metadata": str(metadata_path.relative_to(PROJECT_ROOT)),
+                "metrics": str(evaluation_path.relative_to(PROJECT_ROOT)),
             },
         }
-        METADATA_PATH.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
-        EVALUATION_PATH.write_text(
+        metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
+        evaluation_path.write_text(
             json.dumps({"metadata": metadata, "test_metrics": metrics}, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
 
-    print_result_summary(len(frame), y_test, threshold, metrics)
+    print_result_summary(dataset_label, len(frame), y_test, threshold, metrics)
     print("\n[저장 파일]")
-    print(f"- 모델 Pipeline: {MODEL_PATH.relative_to(PROJECT_ROOT)}")
-    print(f"- 평가 결과: {EVALUATION_PATH.relative_to(PROJECT_ROOT)}")
+    print(f"- 모델 Pipeline: {model_path.relative_to(PROJECT_ROOT)}")
+    print(f"- 평가 결과: {evaluation_path.relative_to(PROJECT_ROOT)}")
 
 
 if __name__ == "__main__":

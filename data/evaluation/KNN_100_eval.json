@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "model": "KNeighborsClassifier",
+    "purpose": "small-sample KNN model using EDA-preprocessed features",
+    "input_path": "data/processed/churn_preprocessed_full.csv",
+    "input_dataset": "full",
+    "dataset_label": "100",
+    "sample_rows": 30000,
+    "features": [
+      "Age",
+      "Monthly_Visits",
+      "Avg_Workout_Duration_Min",
+      "Group_Class_Attendance",
+      "PT_Session_Count",
+      "Avg_Equipment_Wait_Time_Min",
+      "Late_Payment_Count",
+      "Start_Year",
+      "Start_Month",
+      "Start_Weekday",
+      "Membership_Days",
+      "Cardio_Preference_Elliptical",
+      "Cardio_Preference_No Preference",
+      "Cardio_Preference_Rowing",
+      "Cardio_Preference_Treadmill",
+      "Supplement_Usage_Full Stack",
+      "Supplement_Usage_No Protein Supplements",
+      "Supplement_Usage_Pre-Workout",
+      "Supplement_Usage_Whey Protein",
+      "Profile_Type_Drop-out",
+      "Profile_Type_Hardcore",
+      "Profile_Type_Regular"
+    ],
+    "target_column": "Churn",
+    "target_meaning": {
+      "0": "retained",
+      "1": "churned"
+    },
+    "random_state": 42,
+    "threshold_from_validation": 0.1798441092420201,
+    "preprocessing": "Applied upstream in the input CSV; this script only median-imputes.",
+    "artifacts": {
+      "pipeline": "models/knn_100_pipeline.joblib",
+      "metadata": "models/knn_100_metadata.json",
+      "metrics": "data/evaluation/KNN_100_eval.json"
+    }
+  },
+  "test_metrics": {
+    "accuracy": 0.4285,
+    "precision": 0.39660211910851295,
+    "recall": 0.9451458424031345,
+    "f1": 0.5587440483850212,
+    "roc_auc": 0.6003993044268311,
+    "pr_auc": 0.4808655946092285,
+    "confusion_matrix": [
+      [
+        400,
+        3303
+      ],
+      [
+        126,
+        2171
+      ]
+    ],
+    "total_samples": 6000,
+    "total_inference_seconds": 0.21890844299923629,
+    "average_inference_ms": 0.036484740499872714
+  }
+}

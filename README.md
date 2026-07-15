@@ -362,6 +362,17 @@ df_roc.to_parquet(
 - Streamlit 구조를 모듈화하고 컴포넌트를 재사용할 수 있도록 설계하면서 유지보수성과 확장성을 고려한 개발의 중요성을 배웠습니다.
 - 모바일 환경에서도 편리하게 사용할 수 있도록 UI/UX를 개선하며 사용자 중심 설계 경험을 쌓을 수 있었습니다.
 
+## KNN · Logistic Regression 실행
+
+```bash
+# KNN: 전체 피처(100%) / 중요도 상위 50% 피처
+python src/models/train_knn_classifier.py --dataset full
+python src/models/train_knn_classifier.py --dataset pct50
+
+# Logistic Regression: 전체 피처(100%) / 중요도 상위 50% 피처
+python src/models/train_logistic_regression.py --dataset full
+python src/models/train_logistic_regression.py --dataset pct50
+```
 
 
 

@@ -4,3 +4,11 @@ target_column: churn
 random_state: 42
 test_size: 0.2
 training_fractions: [1.0, 0.5]
+
+# 소규모 KNN 기준 모델 설정
+knn_baseline:
+  n_neighbors: 15
+  weights: distance
+  n_jobs: 1
+  max_rows: 30000
+  validation_size: 0.25

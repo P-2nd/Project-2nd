@@ -35,7 +35,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = PROJECT_ROOT / "configs" / "model_params.yaml"
 DEFAULT_INPUT = PROJECT_ROOT / "data" / "raw" / "gym_churn_1M_dataset.csv"
@@ -139,9 +138,10 @@ def load_even_sample(path: Path, max_rows: int, random_state: int) -> pd.DataFra
 
     return pd.concat(samples, ignore_index=True)
 
+    """학습 시점에도 알 수 있는 가입일에서 단순 달력 Feature를 만든다."""
+
 
 def add_date_features(frame: pd.DataFrame) -> pd.DataFrame:
-    """학습 시점에도 알 수 있는 가입일에서 단순 달력 Feature를 만든다."""
     result = frame.copy()
     dates = pd.to_datetime(result[DATE_COLUMN], errors="coerce")
     result["membership_start_year"] = dates.dt.year
@@ -149,17 +149,19 @@ def add_date_features(frame: pd.DataFrame) -> pd.DataFrame:
     result["membership_start_dayofweek"] = dates.dt.dayofweek
     return result.drop(columns=[DATE_COLUMN])
 
+    """프로젝트 밖의 임시 입력 경로가 메타데이터에 남지 않게 한다."""
+
 
 def display_input_path(path: Path) -> str:
-    """프로젝트 밖의 임시 입력 경로가 메타데이터에 남지 않게 한다."""
     try:
         return str(path.resolve().relative_to(PROJECT_ROOT))
     except ValueError:
         return f"external source supplied at runtime: {path.name}"
 
+    """Validation 데이터에서 F1이 최대인 임계값을 선택한다."""
+
 
 def choose_f1_threshold(y_true: pd.Series, probabilities: np.ndarray) -> float:
-    """Validation 데이터에서 F1이 최대인 임계값을 선택한다."""
     precision, recall, thresholds = precision_recall_curve(y_true, probabilities)
     if not len(thresholds):
         return 0.5
@@ -169,7 +171,7 @@ def choose_f1_threshold(y_true: pd.Series, probabilities: np.ndarray) -> float:
 
 
 def evaluate(
-    y_true: pd.Series, probabilities: np.ndarray, threshold: float, elapsed_seconds: float
+        y_true: pd.Series, probabilities: np.ndarray, threshold: float, elapsed_seconds: float
 ) -> dict[str, Any]:
     predictions = (probabilities >= threshold).astype(int)
     return {
@@ -187,7 +189,7 @@ def evaluate(
 
 
 def print_result_summary(
-    sample_rows: int, y_test: pd.Series, threshold: float, metrics: dict[str, Any]
+        sample_rows: int, y_test: pd.Series, threshold: float, metrics: dict[str, Any]
 ) -> None:
     """평가 수치를 발표·학습에 바로 활용할 수 있도록 한글로 출력한다."""
     # Accuracy는 1에 가까울수록 좋은 지표다. 따라서 현재 KNN의 Accuracy 0.4788은 좋은 결과가 아니다.

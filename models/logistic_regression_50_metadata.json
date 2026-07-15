@@ -6,8 +6,8 @@
   "dataset_label": "50",
   "sample_rows": 30000,
   "features": [
-    "Late_Payment_Count",
     "Monthly_Visits",
+    "PT_Session_Count",
     "Start_Year",
     "Membership_Days",
     "Group_Class_Attendance",
@@ -23,7 +23,7 @@
     "1": "churned"
   },
   "random_state": 42,
-  "threshold_from_validation": 0.39215230993044276,
+  "threshold_from_validation": 0.4047839545574771,
   "preprocessing": "Applied upstream in the input CSV; this script imputes and scales numeric features within the training pipeline.",
   "artifacts": {
     "pipeline": "models/logistic_regression_50_pipeline.joblib",

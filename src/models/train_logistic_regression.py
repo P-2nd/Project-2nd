@@ -288,7 +288,8 @@ def main() -> None:
 
     with ProgressIndicator("전처리 피처 Train/Validation/Test 분할"):
         # X = frame.drop(columns=[target_column])
-        X = frame.drop(columns=[target_column, "PT_Session_Count"])
+        # PT_Session_Count, Late_Payment_Count
+        X = frame.drop(columns=[target_column, "Late_Payment_Count"])
         y = frame[target_column].astype(int)
         non_numeric_columns = X.select_dtypes(exclude=["number", "bool"]).columns.tolist()
         if non_numeric_columns:

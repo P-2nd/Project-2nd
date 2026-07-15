@@ -119,42 +119,42 @@
           "feature_count": 21
         },
         "performance": {
-          "total_time_sec": 4.506947399000637,
-          "avg_latency_ms": 0.001931512000131382,
+          "total_time_sec": 4.515628146000381,
+          "avg_latency_ms": 0.00247197966746171,
           "total_samples": 6000
         },
         "confusion_matrix": [
           [
-            1377,
-            2326
+            1149,
+            2554
           ],
           [
-            402,
-            1895
+            399,
+            1898
           ]
         ],
-        "auc_score": 0.6701804688123656,
-        "threshold": 0.39235532104450915,
+        "auc_score": 0.6189169237758134,
+        "threshold": 0.420821827339111,
         "test_metrics": {
-          "accuracy": 0.5453333333333333,
-          "precision": 0.44894574745321014,
-          "recall": 0.8249891162385721,
-          "f1": 0.581466707579012,
-          "roc_auc": 0.6701804688123656,
-          "pr_auc": 0.5462542661135046,
+          "accuracy": 0.5078333333333334,
+          "precision": 0.42632524707996405,
+          "recall": 0.8262951676099259,
+          "f1": 0.5624536968439768,
+          "roc_auc": 0.6189169237758134,
+          "pr_auc": 0.4907145197838598,
           "confusion_matrix": [
             [
-              1377,
-              2326
+              1149,
+              2554
             ],
             [
-              402,
-              1895
+              399,
+              1898
             ]
           ],
           "total_samples": 6000,
-          "total_inference_seconds": 0.011589072000788292,
-          "average_inference_ms": 0.001931512000131382
+          "total_inference_seconds": 0.01483187800477026,
+          "average_inference_ms": 0.00247197966746171
         },
         "artifacts": {
           "pipeline": "models/logistic_regression_100_pipeline.joblib",
@@ -172,42 +172,42 @@
           "feature_count": 10
         },
         "performance": {
-          "total_time_sec": 2.872652881000249,
-          "avg_latency_ms": 0.0019933958331724475,
+          "total_time_sec": 2.8121112680018996,
+          "avg_latency_ms": 0.001945237499361004,
           "total_samples": 6000
         },
         "confusion_matrix": [
           [
-            1345,
-            2358
+            905,
+            2798
           ],
           [
-            406,
-            1891
+            306,
+            1991
           ]
         ],
-        "auc_score": 0.6689208563906638,
-        "threshold": 0.39215230993044276,
+        "auc_score": 0.6195758865930282,
+        "threshold": 0.4047839545574771,
         "test_metrics": {
-          "accuracy": 0.5393333333333333,
-          "precision": 0.44504589315132975,
-          "recall": 0.8232477144101001,
-          "f1": 0.5777574091047968,
-          "roc_auc": 0.6689208563906638,
-          "pr_auc": 0.5448540226763063,
+          "accuracy": 0.4826666666666667,
+          "precision": 0.41574441428273123,
+          "recall": 0.8667827601218981,
+          "f1": 0.5619531470505221,
+          "roc_auc": 0.6195758865930282,
+          "pr_auc": 0.48933054465082726,
           "confusion_matrix": [
             [
-              1345,
-              2358
+              905,
+              2798
             ],
             [
-              406,
-              1891
+              306,
+              1991
             ]
           ],
           "total_samples": 6000,
-          "total_inference_seconds": 0.011960374999034684,
-          "average_inference_ms": 0.0019933958331724475
+          "total_inference_seconds": 0.011671424996166024,
+          "average_inference_ms": 0.001945237499361004
         },
         "artifacts": {
           "pipeline": "models/logistic_regression_50_pipeline.joblib",
@@ -490,5 +490,5 @@
       }
     }
   },
-  "updated_at": "2026-07-15T08:46:06.892325+00:00"
+  "updated_at": "2026-07-15T09:14:52.167248+00:00"
 }

@@ -10,8 +10,8 @@
     "Monthly_Visits",
     "Avg_Workout_Duration_Min",
     "Group_Class_Attendance",
+    "PT_Session_Count",
     "Avg_Equipment_Wait_Time_Min",
-    "Late_Payment_Count",
     "Start_Year",
     "Start_Month",
     "Start_Weekday",
@@ -34,7 +34,7 @@
     "1": "churned"
   },
   "random_state": 42,
-  "threshold_from_validation": 0.39235532104450915,
+  "threshold_from_validation": 0.420821827339111,
   "preprocessing": "Applied upstream in the input CSV; this script imputes and scales numeric features within the training pipeline.",
   "artifacts": {
     "pipeline": "models/logistic_regression_100_pipeline.joblib",

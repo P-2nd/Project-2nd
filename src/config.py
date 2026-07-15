@@ -31,6 +31,8 @@ ENV_PATH = PROJECT_ROOT / ".env"
 # 데이터셋 파일
 RAW_DATA_FILENAME = "gym_churn_1M_dataset.csv"
 RAW_DATA_PATH = RAW_DATA_DIR / RAW_DATA_FILENAME
+PROCESSED_FULL_DATA_PATH = PROCESSED_DATA_DIR / "churn_preprocessed_full.csv"
+PROCESSED_PCT50_DATA_PATH = PROCESSED_DATA_DIR / "churn_preprocessed_pct50.csv"
 
 
 # 데이터 스키마
@@ -82,6 +84,9 @@ KNN_METADATA_PATH = MODELS_DIR / "knn_metadata.json"
 KNN_METRICS_PATH = EVALUATION_DATA_DIR / "knn_metrics.json"
 
 
+# 학습 횟수 통일 상수 
+TRAIN_LOOP_COUNT = 500
+
 __all__ = [
     "CONFIGS_DIR",
     "DATA_DIR",
@@ -100,6 +105,8 @@ __all__ = [
     "NOTEBOOKS_DIR",
     "PROCESSED_DATA_DIR",
     "PROJECT_ROOT",
+    "PROCESSED_FULL_DATA_PATH",
+    "PROCESSED_PCT50_DATA_PATH",
     "RANDOM_STATE",
     "RAW_DATA_DIR",
     "RAW_DATA_FILENAME",

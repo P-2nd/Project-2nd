@@ -1,0 +1,18 @@
+{
+    "performance": {
+        "total_time_sec": 2.1763126850128174,
+        "avg_latency_ms": 0.010881563425064087,
+        "total_samples": 200000
+    },
+    "confusion_matrix": [
+        [
+            103421,
+            19439
+        ],
+        [
+            48081,
+            29059
+        ]
+    ],
+    "auc_score": 0.6864099977563516
+}

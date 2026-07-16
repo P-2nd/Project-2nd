@@ -112,7 +112,6 @@ Project-2nd/
 ├── GUIDE.md
 ├── models/                               # 최종 배포용 모델(파이프라인)
 │   ├── .gitkeep
-│   ├── knn_100_metadata.json
 │   ├── knn_100_pipeline.joblib
 │   ├── ...
 │   └── xgboost_50_pipeline.joblib

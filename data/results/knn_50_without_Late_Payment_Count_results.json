@@ -1,0 +1,33 @@
+{
+    "model_key": "knn_50_without_Late_Payment_Count",
+    "model_name": "KNN_50_WITHOUT_LATE_PAYMENT_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_Late_Payment_Count"
+    },
+    "accuracy": 0.60812,
+    "precision": 0.4834644405201477,
+    "recall": 0.23423645320197045,
+    "f1_score": 0.3155771346734897,
+    "total_time_sec": 144.820671999998,
+    "avg_latency_ms": 0.7241033599999901,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            103555,
+            19305
+        ],
+        [
+            59071,
+            18069
+        ]
+    ],
+    "auc_score": 0.574293530705887,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\knn_50_without_Late_Payment_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

@@ -1,1 +1,1 @@
-"""Model training modules."""
+"""Metrics, plots, and evaluation artifact modules."""

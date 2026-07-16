@@ -1,0 +1,33 @@
+{
+    "model_key": "logistic_50_without_Late_Payment_Count",
+    "model_name": "LOGISTIC_50_WITHOUT_LATE_PAYMENT_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_Late_Payment_Count"
+    },
+    "accuracy": 0.63049,
+    "precision": 0.5620116439405546,
+    "recall": 0.19021260046668395,
+    "f1_score": 0.2842282659228266,
+    "total_time_sec": 0.05061729999943054,
+    "avg_latency_ms": 0.0002530864999971527,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            111425,
+            11435
+        ],
+        [
+            62467,
+            14673
+        ]
+    ],
+    "auc_score": 0.6199446287620627,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_50_without_Late_Payment_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

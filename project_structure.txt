@@ -1,0 +1,104 @@
+Project-2nd/
+├── .env.example
+├── .gitignore
+├── .python-version
+├── AGENTS.md
+├── configs/
+│   └── model_params.yaml
+├── data/
+│   ├── eda/
+│   │   ├── boxplot.png
+│   │   ├── categorical_distribution.png
+│   │   ├── churn_class_distribution.png
+│   │   ├── correlation_heatmap.png
+│   │   ├── correlation_heatmap_2.png
+│   │   ├── iqr_result.png
+│   │   └── numeric_distribution.png
+│   ├── evaluation/
+│   │   ├── .gitkeep
+│   │   ├── plots/
+│   │   │   ├── knn_50_confusion_matrix.png
+│   │   │   ├── knn_50_roc.png
+│   │   │   ├── ...
+│   │   │   └── xgboost_full_without_Late_Payment_Count_roc.png
+│   │   ├── saved_models/
+│   │   │   ├── knn_50_eval.joblib
+│   │   │   ├── knn_50_without_Late_Payment_Count_eval.joblib
+│   │   │   ├── ...
+│   │   │   └── xgboost_full_without_Late_Payment_Count_eval.joblib
+│   │   └── saved_params/
+│   │       ├── knn_50_params.json
+│   │       ├── knn_50_without_Late_Payment_Count_params.json
+│   │       ├── ...
+│   │       └── xgboost_full_without_Late_Payment_Count_params.json
+│   ├── model_list.json
+│   ├── processed/
+│   │   ├── .gitkeep
+│   │   ├── churn_preprocessed_full.csv
+│   │   └── churn_preprocessed_pct50.csv
+│   ├── raw/
+│   │   ├── .gitkeep
+│   │   └── gym_churn_1M_dataset.csv
+│   └── results/
+│       ├── knn_50_results.json
+│       ├── knn_50_without_Late_Payment_Count_results.json
+│       ├── ...
+│       ├── result_data.json
+│       ├── xgboost_50_results.json
+│       ├── xgboost_50_without_Late_Payment_Count_results.json
+│       ├── xgboost_full_results.json
+│       ├── xgboost_full_without_Late_Payment_Count_results.json
+│       │
+│       └── roc/
+│           ├── knn_100.parquet
+│           ├── knn_50_100.parquet
+│           ├── knn_50_without_Late_Payment_Count_without_Late_Payment_Count.parquet
+│           ├── ...
+│           └── xgboost_full_without_Late_Payment_Count_without_Late_Payment_Count.parquet
+
+├── EDA.md
+├── GUIDE.md
+├── models
+│   ├── .gitkeep
+│   ├── knn_100_metadata.json
+│   ├── knn_100_pipeline.joblib
+│   ├── ...
+│   └── xgboost_50_pipeline.joblib
+├── notebooks
+│   ├── .gitkeep
+│   └── 01_EDA.ipynb
+├── project_structure.py
+├── README.md
+├── requirements.txt
+├── RESULT.md
+├── skills
+│   └── churn-ml-project
+│       ├── agents
+│       │   └── openai.yaml
+│       └── SKILL.md
+├── SKILLS.md
+├── src
+│   ├── __init__.py
+│   ├── common
+│   │   ├── __init__.py
+│   │   └── results.py
+│   ├── config.py
+│   ├── environment
+│   │   ├── __init__.py
+│   │   ├── runtime_environment.py
+│   │   └── setup_python312_env.py
+│   ├── evaluation
+│   │   ├── __init__.py
+│   │   ├── evaluation_plot.py
+│   │   └── model_eval.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── model_knn.py
+│   │   ├── model_lightgbm.py
+│   │   ├── model_logistic.py
+│   │   ├── model_randomforest.py
+│   │   └── model_xgboost.py
+│   └── preprocessing
+│       ├── __init__.py
+│       └── preprocessing.py
+└── Viewer.py

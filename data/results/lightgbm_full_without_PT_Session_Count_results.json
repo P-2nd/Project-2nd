@@ -1,0 +1,33 @@
+{
+    "model_key": "lightgbm_full_without_PT_Session_Count",
+    "model_name": "LIGHTGBM_FULL_WITHOUT_PT_SESSION_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_PT_Session_Count"
+    },
+    "accuracy": 0.660445,
+    "precision": 0.5982958781552881,
+    "recall": 0.3641042260824475,
+    "f1_score": 0.4527058065036064,
+    "total_time_sec": 1.9440700000013749,
+    "avg_latency_ms": 0.009720350000006874,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            104002,
+            18858
+        ],
+        [
+            49053,
+            28087
+        ]
+    ],
+    "auc_score": 0.6820272957924289,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\lightgbm_full_without_PT_Session_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

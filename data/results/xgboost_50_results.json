@@ -1,0 +1,33 @@
+{
+    "model_key": "xgboost_50",
+    "model_name": "XGBOOST_50",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "full"
+    },
+    "accuracy": 0.663085,
+    "precision": 0.6003084198622392,
+    "recall": 0.37848068446979516,
+    "f1_score": 0.46425760286225404,
+    "total_time_sec": 0.749088100001245,
+    "avg_latency_ms": 0.0037454405000062253,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            103421,
+            19439
+        ],
+        [
+            47944,
+            29196
+        ]
+    ],
+    "auc_score": 0.6875758984480629,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\xgboost_50.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

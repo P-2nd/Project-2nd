@@ -1,0 +1,33 @@
+{
+    "model_key": "randomforest_full_without_PT_Session_Count",
+    "model_name": "RANDOMFOREST_FULL_WITHOUT_PT_SESSION_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_PT_Session_Count"
+    },
+    "accuracy": 0.64913,
+    "precision": 0.5729118693740841,
+    "recall": 0.3547835105003889,
+    "f1_score": 0.4382035065246978,
+    "total_time_sec": 16.231929300000047,
+    "avg_latency_ms": 0.08115964650000024,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            102458,
+            20402
+        ],
+        [
+            49772,
+            27368
+        ]
+    ],
+    "auc_score": 0.6618120795295731,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\randomforest_full_without_PT_Session_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "model_key": "logistic",
+    "model_name": "LOGISTIC",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "full"
+    },
+    "total_time_sec": 0.07394990000011603,
+    "avg_latency_ms": 0.00036974950000058016,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            103179,
+            19681
+        ],
+        [
+            48584,
+            28556
+        ]
+    ],
+    "auc_score": 0.6816027589638209,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_100.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

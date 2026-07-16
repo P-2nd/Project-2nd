@@ -1,0 +1,33 @@
+{
+    "model_key": "logistic_50_without_PT_Session_Count",
+    "model_name": "LOGISTIC_50_WITHOUT_PT_SESSION_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_PT_Session_Count"
+    },
+    "accuracy": 0.65391,
+    "precision": 0.5844202898550724,
+    "recall": 0.3554705729841846,
+    "f1_score": 0.4420602934064162,
+    "total_time_sec": 0.04568289999951958,
+    "avg_latency_ms": 0.00022841449999759788,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            103361,
+            19499
+        ],
+        [
+            49719,
+            27421
+        ]
+    ],
+    "auc_score": 0.6728550952007994,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_50_without_PT_Session_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

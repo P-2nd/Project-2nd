@@ -1,0 +1,33 @@
+{
+    "model_key": "logistic_50",
+    "model_name": "LOGISTIC_50",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "full"
+    },
+    "accuracy": 0.657365,
+    "precision": 0.5888652731062091,
+    "recall": 0.3699377754731657,
+    "f1_score": 0.4544072101336773,
+    "total_time_sec": 0.03345009999975446,
+    "avg_latency_ms": 0.00016725049999877228,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            102936,
+            19924
+        ],
+        [
+            48603,
+            28537
+        ]
+    ],
+    "auc_score": 0.6796578649713587,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_50.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

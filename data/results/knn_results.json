@@ -1,0 +1,29 @@
+{
+    "model_key": "knn",
+    "model_name": "KNN",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "full"
+    },
+    "total_time_sec": 467.1048707,
+    "avg_latency_ms": 2.3355243535,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            91003,
+            31857
+        ],
+        [
+            47134,
+            30006
+        ]
+    ],
+    "auc_score": 0.5924918448800689,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\knn_100.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

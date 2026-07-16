@@ -1,0 +1,33 @@
+{
+    "model_key": "xgboost_50_without_PT_Session_Count",
+    "model_name": "XGBOOST_50_WITHOUT_PT_SESSION_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_PT_Session_Count"
+    },
+    "accuracy": 0.660285,
+    "precision": 0.5980762258195236,
+    "recall": 0.36352087114337567,
+    "f1_score": 0.4521918614495231,
+    "total_time_sec": 0.4105778000011924,
+    "avg_latency_ms": 0.002052889000005962,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            104015,
+            18845
+        ],
+        [
+            49098,
+            28042
+        ]
+    ],
+    "auc_score": 0.6820240973482616,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\xgboost_50_without_PT_Session_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

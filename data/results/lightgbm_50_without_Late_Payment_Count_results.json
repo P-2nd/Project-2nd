@@ -1,0 +1,33 @@
+{
+    "model_key": "lightgbm_50_without_Late_Payment_Count",
+    "model_name": "LIGHTGBM_50_WITHOUT_LATE_PAYMENT_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_Late_Payment_Count"
+    },
+    "accuracy": 0.635845,
+    "precision": 0.5676473358661183,
+    "recall": 0.23436608763287528,
+    "f1_score": 0.3317582508326528,
+    "total_time_sec": 0.9955976999990526,
+    "avg_latency_ms": 0.004977988499995263,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            109090,
+            13770
+        ],
+        [
+            59061,
+            18079
+        ]
+    ],
+    "auc_score": 0.6311289660106245,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\lightgbm_50_without_Late_Payment_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

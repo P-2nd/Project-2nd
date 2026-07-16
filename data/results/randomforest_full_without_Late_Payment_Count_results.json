@@ -1,0 +1,33 @@
+{
+    "model_key": "randomforest_full_without_Late_Payment_Count",
+    "model_name": "RANDOMFOREST_FULL_WITHOUT_LATE_PAYMENT_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_Late_Payment_Count"
+    },
+    "accuracy": 0.62381,
+    "precision": 0.5268113899069636,
+    "recall": 0.2422348975887996,
+    "f1_score": 0.3318710594085783,
+    "total_time_sec": 17.25218440000026,
+    "avg_latency_ms": 0.0862609220000013,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            106076,
+            16784
+        ],
+        [
+            58454,
+            18686
+        ]
+    ],
+    "auc_score": 0.6035588299955545,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\randomforest_full_without_Late_Payment_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

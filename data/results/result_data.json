@@ -488,7 +488,111 @@
           }
         ]
       }
+    },
+    "logistic": {
+      "100": {
+        "model": "LOGISTIC",
+        "experiment": {
+          "label": "100",
+          "comparison_axis": "feature_set",
+          "feature_set": "full"
+        },
+        "performance": {
+          "total_time_sec": 0.06532650000008289,
+          "avg_latency_ms": 0.00032663250000041443,
+          "total_samples": 200000
+        },
+        "confusion_matrix": [
+          [
+            103179,
+            19681
+          ],
+          [
+            48584,
+            28556
+          ]
+        ],
+        "auc_score": 0.6816027589638209,
+        "threshold": 0.5,
+        "test_metrics": {
+          "accuracy": 0.658675,
+          "precision": 0.5919936977838589,
+          "recall": 0.37018408089188487,
+          "f1": 0.4555221452100465,
+          "roc_auc": 0.6816027589638209,
+          "pr_auc": 0.5609687529041706,
+          "confusion_matrix": [
+            [
+              103179,
+              19681
+            ],
+            [
+              48584,
+              28556
+            ]
+          ],
+          "total_samples": 200000,
+          "average_inference_ms": 0.00032663250000041443
+        },
+        "artifacts": {
+          "roc_source": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_100_auc_roc.parquet"
+        }
+      }
+    },
+    "logistic_without_Late_Payment_Count": {
+      "without_Late_Payment_Count": {
+        "model": "LOGISTIC_WITHOUT_LATE_PAYMENT_COUNT",
+        "experiment": {
+          "label": "without_Late_Payment_Count",
+          "comparison_axis": "feature_set",
+          "feature_set": "without_Late_Payment_Count"
+        },
+        "performance": {
+          "total_time_sec": 0.061218600000302104,
+          "avg_latency_ms": 0.0003060930000015105,
+          "total_samples": 200000
+        },
+        "confusion_matrix": [
+          [
+            110442,
+            12418
+          ],
+          [
+            61359,
+            15781
+          ]
+        ],
+        "auc_score": 0.6220843811571343,
+        "threshold": 0.5,
+        "test_metrics": {
+          "accuracy": 0.631115,
+          "precision": 0.5596297741054648,
+          "recall": 0.20457609541094116,
+          "f1": 0.29962312154092974,
+          "roc_auc": 0.6220843811571343,
+          "pr_auc": 0.4993350845142202,
+          "confusion_matrix": [
+            [
+              110442,
+              12418
+            ],
+            [
+              61359,
+              15781
+            ]
+          ],
+          "total_samples": 200000,
+          "average_inference_ms": 0.0003060930000015105
+        },
+        "artifacts": {
+          "roc_source": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_without_Late_Payment_Count_without_Late_Payment_Count_auc_roc.parquet"
+        }
+      }
     }
   },
+<<<<<<< HEAD
   "updated_at": "2026-07-15T09:14:52.167248+00:00"
+=======
+  "updated_at": "2026-07-16T00:31:46.969500+00:00"
+>>>>>>> d9a1c87 (model 수정 및 모델 평가 및 저장 파이썬 파일 생성, 각종 결과 데이터와 plot 생성, README 수정)
 }

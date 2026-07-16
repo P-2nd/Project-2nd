@@ -1,0 +1,33 @@
+{
+    "model_key": "knn_50",
+    "model_name": "KNN_50",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "full"
+    },
+    "accuracy": 0.63267,
+    "precision": 0.542766680635098,
+    "recall": 0.3022297122115634,
+    "f1_score": 0.3882625276866455,
+    "total_time_sec": 242.99335810000048,
+    "avg_latency_ms": 1.2149667905000023,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            103220,
+            19640
+        ],
+        [
+            53826,
+            23314
+        ]
+    ],
+    "auc_score": 0.6283074249296781,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\knn_50.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

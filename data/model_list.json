@@ -1,0 +1,13 @@
+{
+    "models": [
+        "knn",
+        "lightgbm",
+        "logistic",
+        "randomforest",
+        "xgboost"
+    ],
+    "exclude_features": [
+        "Late_Payment_Count",
+        "PT_Session_Count"
+    ]
+}

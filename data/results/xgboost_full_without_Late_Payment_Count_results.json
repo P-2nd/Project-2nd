@@ -1,0 +1,33 @@
+{
+    "model_key": "xgboost_full_without_Late_Payment_Count",
+    "model_name": "XGBOOST_FULL_WITHOUT_LATE_PAYMENT_COUNT",
+    "experiment": {
+        "comparison_axis": "feature_set",
+        "feature_set": "without_Late_Payment_Count"
+    },
+    "accuracy": 0.636005,
+    "precision": 0.5682010997643362,
+    "recall": 0.23441794140523722,
+    "f1_score": 0.33190474005414583,
+    "total_time_sec": 0.27937720000045374,
+    "avg_latency_ms": 0.0013968860000022688,
+    "total_samples": 200000,
+    "confusion_matrix": [
+        [
+            109118,
+            13742
+        ],
+        [
+            59057,
+            18083
+        ]
+    ],
+    "auc_score": 0.6311058594066377,
+    "parquet": {
+        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\xgboost_full_without_Late_Payment_Count.parquet",
+        "columns": [
+            "y_true",
+            "y_score"
+        ]
+    }
+}

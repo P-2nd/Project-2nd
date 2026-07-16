@@ -411,10 +411,13 @@ main
 ## Model 비교 및 Streamlit 실행
 
 ```bash
-# Sreamlit 실행
+# Viewer 및 Streamlit에서 사용할 결과 데이터 생성
+python src/evaluation/model_eval.py
+
+# Streamlit 실행
 streamlit run run.py
 
-# Models 결과 확인
+# 모델 결과 확인
 python Viewer.py
 ```
 

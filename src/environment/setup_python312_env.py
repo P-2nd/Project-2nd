@@ -5,6 +5,7 @@ Usage:
     python setup_python312_env.py
     python setup_python312_env.py --recreate
     python setup_python312_env.py --python /path/to/python3.12
+    python setup_python312_env.py --install-system-dependencies
 
 Set PYTHON312_EXECUTABLE when python3.12 is not on PATH.
 """
@@ -13,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -20,9 +22,10 @@ from pathlib import Path
 
 
 PYTHON_VERSION = (3, 12)
+MACOS_PROFILES = {"Intel macOS", "Apple Silicon macOS"}
 
-# PyPI 배포판 이름과 import 이름. requirements.txt의 모든 직접 의존성을 점검한다.
-REQUIRED_PACKAGES = {
+# PyPI 배포판 이름과 import 이름. 모든 플랫폼에서 설치되는 직접 의존성을 점검한다.
+BASE_REQUIRED_PACKAGES = {
     "numpy": "numpy",
     "pandas": "pandas",
     "scipy": "scipy",
@@ -45,6 +48,76 @@ REQUIRED_PACKAGES = {
     "streamlit": "streamlit",
     "pytest": "pytest",
 }
+
+
+def environment_profile(system_platform: str | None = None, machine: str | None = None) -> str:
+    """Return the supported platform label used by the dependency markers."""
+    resolved_platform = system_platform or sys.platform
+    resolved_machine = (machine or platform.machine()).lower()
+    if resolved_platform == "darwin" and resolved_machine == "x86_64":
+        return "Intel macOS"
+    if resolved_platform == "darwin" and resolved_machine in {"arm64", "aarch64"}:
+        return "Apple Silicon macOS"
+    if resolved_platform == "win32":
+        return "Windows"
+    return f"{platform.system()} ({platform.machine()})"
+
+
+def required_packages(profile: str | None = None) -> dict[str, str]:
+    """Return the direct requirements active for the current platform."""
+    packages = dict(BASE_REQUIRED_PACKAGES)
+    if (profile or environment_profile()) == "Intel macOS":
+        packages.update({"numba": "numba", "llvmlite": "llvmlite"})
+    return packages
+
+
+def requires_macos_openmp(profile: str) -> bool:
+    """Return whether the platform needs libomp for the XGBoost wheel."""
+    return profile in MACOS_PROFILES
+
+
+def libomp_dylib(brew: str) -> Path | None:
+    """Return Homebrew's libomp runtime path when it is installed."""
+    result = subprocess.run(
+        [brew, "--prefix", "libomp"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return None
+    runtime = Path(result.stdout.strip()) / "lib" / "libomp.dylib"
+    return runtime if runtime.is_file() else None
+
+
+def ensure_macos_openmp(profile: str, install_missing: bool) -> None:
+    """Check or install Homebrew libomp before XGBoost is imported on macOS."""
+    if not requires_macos_openmp(profile):
+        return
+
+    brew = shutil.which("brew")
+    if not brew:
+        raise RuntimeError(
+            f"{profile}에서 XGBoost를 사용하려면 OpenMP 런타임이 필요합니다. "
+            "Homebrew를 설치한 뒤 다시 실행하세요."
+        )
+
+    runtime = libomp_dylib(brew)
+    if runtime:
+        print(f"- OpenMP runtime: {runtime}")
+        return
+    if not install_missing:
+        raise RuntimeError(
+            f"{profile}에서 XGBoost를 사용하려면 libomp가 필요합니다. "
+            "다음 명령을 콘솔에서 실행하여 설치하세요:\n"
+            "python src/environment/setup_python312_env.py --install-system-dependencies"
+        )
+
+    print(f"{profile}용 OpenMP 런타임을 설치합니다.")
+    run([brew, "install", "libomp"])
+    runtime = libomp_dylib(brew)
+    if not runtime:
+        raise RuntimeError("libomp 설치 후 libomp.dylib를 찾지 못했습니다.")
+    print(f"- OpenMP runtime: {runtime}")
 
 
 def find_project_root(start: Path) -> Path:
@@ -102,13 +175,14 @@ def verify_environment(python: Path) -> None:
 
     print("\n[환경 검증]")
     print(f"- Python: {'.'.join(map(str, python_version(python)))}")
+    print(f"- Platform: {environment_profile()}")
     run([str(python), "-m", "pip", "check"])
 
     # 이 스크립트 자체는 시스템 Python에서 실행되므로, 검증은 .venv Python으로 다시 실행한다.
     package_check = (
         "from importlib import import_module; "
         "from importlib.metadata import version; "
-        f"packages = {REQUIRED_PACKAGES!r}; "
+        f"packages = {required_packages()!r}; "
         "print('[패키지 및 import 검증]'); "
         "[(print(f'- {package}: {version(package)}'), import_module(module)) "
         "for package, module in packages.items()]; "
@@ -129,6 +203,11 @@ def main() -> None:
         "--recreate",
         action="store_true",
         help="기존 .venv를 삭제하고 다시 만듭니다.",
+    )
+    parser.add_argument(
+        "--install-system-dependencies",
+        action="store_true",
+        help="macOS에서 XGBoost용 OpenMP 런타임(libomp)을 Homebrew로 설치합니다.",
     )
     args = parser.parse_args()
 
@@ -155,6 +234,7 @@ def main() -> None:
         run([python312, "-m", "venv", str(environment)])
 
     environment_python = venv_python(environment)
+    ensure_macos_openmp(environment_profile(), args.install_system_dependencies)
     run([str(environment_python), "-m", "pip", "install", "--upgrade", "pip"])
     run([str(environment_python), "-m", "pip", "install", "-r", str(requirements)])
     verify_environment(environment_python)

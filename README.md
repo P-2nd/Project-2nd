@@ -68,17 +68,12 @@ Project-2nd/
 ├── data/
 │   ├── eda/
 │   │   ├── boxplot.png
-│   │   ├── categorical_distribution.png
-│   │   ├── churn_class_distribution.png
-│   │   ├── correlation_heatmap.png
-│   │   ├── correlation_heatmap_2.png
-│   │   ├── iqr_result.png
+│   │   ├── ...
 │   │   └── numeric_distribution.png
 │   ├── evaluation/                       # 모델 평가 산출물
 │   │   ├── .gitkeep
 │   │   ├── plots/                        # ROC Curve, Confusion Matrix 이미지
 │   │   │   ├── knn_50_confusion_matrix.png
-│   │   │   ├── knn_50_roc.png
 │   │   │   ├── ...
 │   │   │   └── xgboost_full_without_Late_Payment_Count_roc.png
 │   │   ├── saved_models/                 # 평가 시점 학습 모델(joblib)
@@ -98,12 +93,9 @@ Project-2nd/
 │   │   ├── .gitkeep
 │   │   └── gym_churn_1M_dataset.csv
 │   └── results/                          # 모델 평가 결과(JSON), ROC 데이터
-│       ├── knn_50_results.json
+│       ├── knn_50_results.json			 # 전체 실험 결과 통합본
 │       ├── ...
-│       ├── result_data.json              # 전체 실험 결과 통합본
 │       ├── xgboost_50_results.json
-│       ├── xgboost_full_results.json
-│       ├── xgboost_full_without_Late_Payment_Count_results.json
 │       └── roc/                          # ROC 생성용 Parquet(y_true, y_score)
 │           ├── knn_100.parquet
 │           ├── ...

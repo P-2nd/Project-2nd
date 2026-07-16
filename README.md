@@ -179,7 +179,10 @@ Project-2nd/
 - ROC Curve 및 Confusion Matrix: data/plots/
 - 모델 성능 비교: RESULT.md
 
-# 추가 예정 (viewer, streamlib 등)
+### 필수
+Viewer와 Streamlit 실행 전, 아래 명령어를 실행하여 결과 데이터를 생성합니다.
+
+python src/evaluation/model_eval.py
 
 ---
 
@@ -405,16 +408,14 @@ main
 - Streamlit 구조를 모듈화하고 컴포넌트를 재사용할 수 있도록 설계하면서 유지보수성과 확장성을 고려한 개발의 중요성을 배웠습니다.
 - 모바일 환경에서도 편리하게 사용할 수 있도록 UI/UX를 개선하며 사용자 중심 설계 경험을 쌓을 수 있었습니다.
 
-## KNN · Logistic Regression 실행
+## Model 비교 및 Streamlit 실행
 
 ```bash
-# KNN: 전체 피처(100%) / 중요도 상위 50% 피처
-python src/models/train_knn_classifier.py --dataset full
-python src/models/train_knn_classifier.py --dataset pct50
+# Sreamlit 실행
+streamlit run run.py
 
-# Logistic Regression: 전체 피처(100%) / 중요도 상위 50% 피처
-python src/models/train_logistic_regression.py --dataset full
-python src/models/train_logistic_regression.py --dataset pct50
+# Models 결과 확인
+python Viewer.py
 ```
 
 

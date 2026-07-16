@@ -377,7 +377,7 @@ main
 | Accuracy | `accuracy` | 정확도 (`metrics["accuracy"]`) |
 | Precision | `precision` | 정밀도 (`metrics["precision"]`) |
 | Recall | `recall` | 재현율 (`metrics["recall"]`) |
-| F1 Score | `f1_score` | F1 스코어 (`metrics["f1"]`) |
+| F1 Score | `f1_score` | F1 스코어 (`metrics["f1_score"]`) |
 
 ### Parquet 저장 내용
 

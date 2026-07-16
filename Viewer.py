@@ -56,41 +56,48 @@ while True:
     model_idx = int(input("\n모델 선택 : "))
     model_name = models[model_idx - 1]
 
-
     # --------------------------
     # Dataset Select
     # --------------------------
 
     print("\n===== 데이터 선택 =====")
     print("1. 전체 데이터")
-    print("2. 제외 Feature")
+    print("2. 상위 중요도 50%")
 
     data_choice = int(input("선택 : "))
 
-
     if data_choice == 1:
-
-        save_name = f"{model_name}_full"
-        roc_label = "100"
-
+        data_name = "full"
     elif data_choice == 2:
-
-        if not exclude_features:
-            print("제외 Feature 없음")
-            continue
-
-        feature = exclude_features[0]
-
-        save_name = f"{model_name}_full_without_{feature}"
-
-        roc_label = f"without_{feature}"
-
+        data_name = "50"
     else:
-        print("잘못된 선택")
+        print("잘못된 데이터 선택")
         continue
 
-    print("\n선택 모델 :", save_name)
+    # --------------------------
+    # Feature Select
+    # --------------------------
 
+    print("\n===== Feature 선택 =====")
+    print("1. 전체 Feature")
+
+    for i, feature in enumerate(exclude_features, start=2):
+        print(f"{i}. {feature} 제외")
+
+    feature_choice = int(input("선택 : "))
+
+    if feature_choice == 1:
+        save_name = f"{model_name}_{data_name}"
+
+    elif 2 <= feature_choice <= len(exclude_features) + 1:
+        feature = exclude_features[feature_choice - 2]
+        save_name = f"{model_name}_{data_name}_without_{feature}"
+
+    else:
+        print("잘못된 Feature 선택")
+        continue
+
+    print(f"\n선택 모델 : {save_name}")
 
     # --------------------------
     # Result JSON
@@ -173,8 +180,8 @@ while True:
     # --------------------------
 
     roc_path = (
-        ROC_DIR
-        /f"{save_name}_{roc_label}.parquet"
+            ROC_DIR
+            / f"{save_name}.parquet"
     )
 
 

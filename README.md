@@ -160,19 +160,46 @@ Project-2nd/
 
 | 항목 | 버전 |
 |------|------|
-| Python | |
-| pandas | |
-| numpy | |
-| scikit-learn | |
-| matplotlib | |
-| seaborn | |
-| pyarrow | |
+| Python | 3.12 |
+| pandas | 2.2 이상 |
+| numpy | Intel Mac: 1.26 이상 2 미만, 그 외: 2.1 이상 |
+| scikit-learn | 1.6 이상 |
+| matplotlib | 3.9 이상 |
+| seaborn | 0.13 이상 |
+| pyarrow | 17 이상 |
 ----------
 
 ## 5. 설치 및 실행 방법
 
-### 필요 라이브러리 설치
-- pip install -r requirements.txt
+### 가상환경과 필요 라이브러리 설치
+
+프로젝트 루트에서 Python 3.12로 아래 명령을 실행합니다.
+
+```bash
+python src/environment/setup_python312_env.py
+```
+
+기존 `.venv`가 Python 3.12가 아니라면 다음 명령으로 다시 만듭니다.
+
+```bash
+python src/environment/setup_python312_env.py --recreate
+```
+
+macOS에서 XGBoost용 OpenMP 런타임이 아직 없다면 아래 명령으로 Homebrew의 `libomp`까지 설치합니다.
+
+```bash
+python src/environment/setup_python312_env.py --install-system-dependencies
+```
+
+스크립트는 가상환경 생성, `requirements.txt` 설치, `pip check`, 패키지 import 검증을 순서대로 수행합니다.
+
+| 환경 | 주요 의존성 분기 | 실행 장치 |
+|------|----------------|----------|
+| Intel Mac | NumPy 1.x, PyTorch 2.2.x, Numba 0.62.x와 llvmlite 0.45.x, Homebrew libomp | CPU |
+| Apple Silicon Mac | NumPy 2.x, PyTorch 2.6 이상, Homebrew libomp | MPS 또는 CPU |
+| Windows | NumPy 2.x, PyTorch 2.6 이상 | CUDA 가능 시 CUDA, 그 외 CPU |
+
+`requirements.txt`의 플랫폼 마커가 각 환경에 맞는 버전을 자동으로 선택하므로, 운영체제별로 별도 requirements 파일을 사용할 필요는 없습니다.
 
 ### 결과 확인
 - 평가 결과(JSON): data/eval/
@@ -420,6 +447,3 @@ streamlit run run.py
 # 모델 결과 확인
 python Viewer.py
 ```
-
-
-### 테스트

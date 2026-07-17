@@ -447,5 +447,3 @@ streamlit run run.py
 # 모델 결과 확인
 python Viewer.py
 ```
-
-## fork 테스트중

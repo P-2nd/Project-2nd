@@ -15,6 +15,16 @@ from utils import (
 )
 
 
+METRIC_LABELS = {
+    "Accuracy": "Accuracy (정확도)",
+    "Precision": "Precision (정밀도)",
+    "Recall": "Recall (재현율)",
+    "F1": "F1 Score (F1 점수)",
+    "AUC": "ROC AUC (ROC-AUC)",
+    "Latency(ms)": "Latency (지연 시간, ms)",
+}
+
+
 def show_compare(model_keys):
 
     if len(model_keys) < 2:
@@ -46,18 +56,17 @@ def show_compare(model_keys):
 
     df = pd.DataFrame(rows)
 
-    st.title("Model Compare")
+    st.title("Model Compare (모델 비교)")
 
     # =====================================================
     # Metric Table
     # =====================================================
 
     st.divider()
-    st.subheader("Metric Table")
+    st.subheader("Metric Table (성능 지표 표)")
 
     st.dataframe(
-        df,
-        use_container_width=True,
+        df.rename(columns={"Model": "Model (모델)", **METRIC_LABELS}),
         hide_index=True
     )
 
@@ -66,16 +75,16 @@ def show_compare(model_keys):
     # =====================================================
 
     st.divider()
-    st.subheader("🏆 Best Model")
+    st.subheader("🏆 Best Model (지표별 최고 모델)")
 
     best_df = pd.DataFrame({
         "Metric": [
-            "Accuracy",
-            "Precision",
-            "Recall",
-            "F1",
-            "ROC AUC",
-            "Latency(ms)"
+            METRIC_LABELS["Accuracy"],
+            METRIC_LABELS["Precision"],
+            METRIC_LABELS["Recall"],
+            METRIC_LABELS["F1"],
+            METRIC_LABELS["AUC"],
+            METRIC_LABELS["Latency(ms)"],
         ],
         "Best Model": [
             df.loc[df["Accuracy"].idxmax(), "Model"],
@@ -93,12 +102,17 @@ def show_compare(model_keys):
             f'{df["AUC"].max():.4f}',
             f'{df["Latency(ms)"].min():.4f}'
         ]
-    })
+    }).rename(
+        columns={
+            "Metric": "Metric (지표)",
+            "Best Model": "Best Model (최고 모델)",
+            "Value": "Value (값)",
+        }
+    )
 
     st.dataframe(
         best_df,
-        hide_index=True,
-        use_container_width=True
+        hide_index=True
     )
 
     # =====================================================
@@ -106,7 +120,7 @@ def show_compare(model_keys):
     # =====================================================
 
     st.divider()
-    st.subheader("🏆 Overall Ranking")
+    st.subheader("🏆 Overall Ranking (종합 순위)")
 
     ranking = df.copy()
 
@@ -147,9 +161,15 @@ def show_compare(model_keys):
                 "AUC",
                 "Latency(ms)"
             ]
-        ],
-        hide_index=True,
-        use_container_width=True
+        ].rename(
+            columns={
+                "Rank": "Rank (순위)",
+                "Model": "Model (모델)",
+                "Total Score": "Total Score (종합 점수)",
+                **METRIC_LABELS,
+            }
+        ),
+        hide_index=True
     )
 
     # =====================================================
@@ -159,25 +179,23 @@ def show_compare(model_keys):
     st.divider()
 
     metric = st.selectbox(
-        "Compare Metric",
-        [
-            "Accuracy",
-            "Precision",
-            "Recall",
-            "F1",
-            "AUC",
-            "Latency(ms)"
-        ]
+        "Compare Metric (비교 지표)",
+        list(METRIC_LABELS.values())
+    )
+
+    metric_key = next(
+        key for key, label in METRIC_LABELS.items()
+        if label == metric
     )
 
     fig, ax = plt.subplots(figsize=(8, 4))
 
     ax.bar(
         df["Model"],
-        df[metric]
+        df[metric_key]
     )
 
-    ax.set_ylabel(metric)
+    ax.set_ylabel(metric_key)
 
     plt.xticks(rotation=20)
 
@@ -188,7 +206,7 @@ def show_compare(model_keys):
     # =====================================================
 
     st.divider()
-    st.subheader("ROC Curve")
+    st.subheader("ROC Curve (ROC 곡선)")
 
     fig, ax = plt.subplots(figsize=(7, 7))
 
@@ -223,7 +241,7 @@ def show_compare(model_keys):
     # =====================================================
 
     st.divider()
-    st.subheader("Confusion Matrix")
+    st.subheader("Confusion Matrix (혼동 행렬)")
 
     cols = st.columns(len(model_keys))
 
@@ -259,7 +277,7 @@ def show_compare(model_keys):
     # =====================================================
 
     st.divider()
-    st.subheader("Saved Plot")
+    st.subheader("Saved Plot (저장된 그래프)")
 
     cols = st.columns(len(model_keys))
 
@@ -274,13 +292,13 @@ def show_compare(model_keys):
             if plots["roc"].exists():
                 st.image(
                     str(plots["roc"]),
-                    caption="ROC",
-                    use_container_width=True
+                    caption="ROC Curve (ROC 곡선)",
+                    width="stretch"
                 )
 
             if plots["cm"].exists():
                 st.image(
                     str(plots["cm"]),
-                    caption="Confusion Matrix",
-                    use_container_width=True
+                    caption="Confusion Matrix (혼동 행렬)",
+                    width="stretch"
                 )

@@ -17,6 +17,10 @@ from components.compare_view import (
     show_compare
 )
 
+from components.prediction_view import (
+    show_prediction
+)
+
 
 # =====================================================
 # Page Config
@@ -45,7 +49,9 @@ page = st.sidebar.radio(
 
         "Single Model",
 
-        "Compare Models"
+        "Compare Models",
+
+        "Churn Prediction (회원 이탈 예측)"
 
     ]
 
@@ -67,8 +73,17 @@ if page == "Single Model":
 # Compare
 # =====================================================
 
-else:
+elif page == "Compare Models":
 
     model_keys = compare_sidebar()
 
     show_compare(model_keys)
+
+
+# =====================================================
+# Churn Prediction
+# =====================================================
+
+else:
+
+    show_prediction()

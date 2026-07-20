@@ -173,12 +173,145 @@ Streamlit은 저장된 모델을 로드하여 추론만 수행한다. 앱 실행
 
 입력값을 바꾸면 예측 확률이 실제로 달라져야 하며, 학습과 화면에서 Feature 이름·자료형·전처리가 같아야 한다. 모델 파일 누락이나 잘못된 입력에는 이해 가능한 오류 메시지를 제공한다.
 
-## 9. 협업과 최종 점검
+## 9. Git 협업 규칙
 
-- `main`에는 직접 작업하지 않고 기능 브랜치에서 작업 후 PR로 병합한다.
-- 데이터, EDA/Feature, 모델링, Streamlit/통합, 문서 작업마다 담당자와 검토자를 지정한다.
-- 하루 한 번 통합 후 전체 실행을 확인한다.
-- 발표 전 아래 항목을 모두 확인한다.
+### 9.1 브랜치 규칙
+
+- `main` 브랜치에는 직접 Push하지 않는다.
+- 모델·기능·문서 작업별 브랜치를 생성하고 Pull Request로 `main`에 병합한다.
+- 한 브랜치에는 가능한 한 하나의 작업 목적만 포함한다.
+
+```text
+main
+├── KNN-CJH
+├── Logistic-CJH
+├── XGBoost-SJH
+├── MLP-JSH
+└── Docs-CJH
+```
+
+### 9.2 커밋 규칙
+
+커밋 메시지는 `작업 영역 - 변경 내용` 형식으로 작성한다. 변경 내용을 알 수 없는 메시지나 빈 메시지는 사용하지 않는다.
+
+```text
+KNN - 거리 가중치 하이퍼파라미터 수정
+XGBoost - 상위 50% 특성 평가 결과 저장
+EDA - 한글 분포 이미지 추가
+README - 모델 평가 결과 설명 보완
+```
+
+### 9.3 작업 순서
+
+1. `git switch -c 브랜치명`으로 작업 브랜치를 생성하고 이동한다.
+2. `git status`로 현재 변경 파일을 확인한다.
+3. 작업 완료 후 관련 테스트와 실행 결과를 확인한다.
+4. `git add 작업파일`로 해당 작업에 필요한 파일만 Stage한다.
+5. `git commit -m "작업 영역 - 변경 내용"`으로 커밋한다.
+6. `git push origin 브랜치명`으로 원격 저장소에 Push한다.
+7. 본인 브랜치에서 `main`을 대상으로 Pull Request를 생성한다.
+8. 팀원 리뷰와 충돌 확인 후 Merge한다.
+
+### 9.4 Pull Request 규칙
+
+- 본인 작업 브랜치에서 `main`으로만 Pull Request를 생성한다.
+- 다른 팀원의 작업 브랜치를 Merge 대상으로 사용하지 않는다.
+- PR 설명에 작업 목적, 변경 파일, 실행·검증 결과를 작성한다.
+- 데이터 경로, 모델 결과 수치, README·RESULT 문서가 서로 일치하는지 확인한다.
+- 리뷰 없이 직접 Merge하지 않는다.
+
+### 9.5 공통 협업 원칙
+
+- 데이터, EDA·Feature, 모델링, Streamlit·통합, 문서 작업마다 담당자와 검토자를 지정한다.
+- 원본 데이터, 가상환경, 대용량 재생성 모델, 비밀정보는 `.gitignore` 규칙을 따른다.
+- 다른 팀원의 작업을 덮어쓰지 않도록 작업 전후 `git status`와 변경 파일을 확인한다.
+- 하루 한 번 통합 브랜치에서 전체 실행 흐름을 확인한다.
+
+## 10. 모델·데이터 파일 및 결과 저장 규칙
+
+### 10.1 파일명 구성
+
+파일명은 다음 자리표시자를 조합해 작성한다.
+
+| 자리표시자 | 의미 | 값 예시 |
+|---|---|---|
+| `<model>` | 모델 식별자 | `knn`, `logistic`, `randomforest`, `lightgbm`, `xgboost` |
+| `<experiment>` | 데이터·특성·제외 실험 구분 | `full`, `50`, `full_without_PT_Session_Count` |
+| `<artifact>` | 산출물 종류 | `eval`, `params`, `results`, `roc`, `confusion_matrix` |
+
+- 모델 식별자는 영문 소문자와 밑줄(`snake_case`)을 사용한다.
+- 공백, 한글, 운영체제별 특수문자를 파일명에 사용하지 않는다.
+- 같은 모델이라도 데이터 또는 특성 구성이 다르면 `<experiment>`로 구분한다.
+- 특정 특성을 제외한 실험은 `<experiment>_without_<feature>` 형식을 사용한다.
+- 프로젝트 내부 경로는 모두 프로젝트 루트 기준 상대경로로 저장한다.
+
+### 10.2 파일별 위치와 형식
+
+| 구분 | 저장 위치 | 파일명 형식 |
+|---|---|---|
+| 원본 데이터 | `data/raw/` | 원본 제공 파일명 유지 |
+| 전처리 데이터 | `data/processed/` | `churn_preprocessed_<feature_set>.csv` |
+| 모델 정의 | `src/models/` | `model_<model>.py` |
+| 개별 학습 스크립트 | `src/models/` | `train_<model>.py` |
+| 평가용 학습 모델 | `data/evaluation/saved_models/` | `<model>_<experiment>_eval.joblib` |
+| 학습 파라미터 | `data/evaluation/saved_params/` | `<model>_<experiment>_params.json` |
+| 모델별 평가 결과 | `data/results/` | `<model>_<experiment>_results.json` |
+| 통합 평가 결과 | `data/results/` | `result_data.json` |
+| ROC 원천 데이터 | `data/results/roc/` | `<model>_<experiment>.parquet` |
+| 혼동행렬 이미지 | `data/evaluation/plots/` | `<model>_<experiment>_confusion_matrix.png` |
+| ROC Curve 이미지 | `data/evaluation/plots/` | `<model>_<experiment>_roc.png` |
+| 배포용 Pipeline | `models/` | `<model>_<experiment>_pipeline.joblib` |
+| 모델 메타데이터 | `models/` | `<model>_<experiment>_metadata.json` |
+
+`data/evaluation/saved_models/`의 모델은 평가 과정에서 다시 만들 수 있으므로 Git 추적에서 제외한다. Git에 포함할 파일과 재생성 가능한 대용량 산출물은 `.gitignore` 규칙을 따른다.
+
+### 10.3 KNN 파일명 예시
+
+아래 파일명은 KNN의 상위 50% 특성 실험을 가정한 **예시**이며, 고정 규칙이 아니다. 다른 모델도 `<model>`과 `<experiment>`만 바꿔 같은 형식을 사용한다.
+
+```text
+src/models/model_knn.py
+data/evaluation/saved_models/knn_50_eval.joblib
+data/evaluation/saved_params/knn_50_params.json
+data/results/knn_50_results.json
+data/results/roc/knn_50.parquet
+data/evaluation/plots/knn_50_confusion_matrix.png
+data/evaluation/plots/knn_50_roc.png
+```
+
+### 10.4 결과 JSON 저장 항목
+
+모델별 `*_results.json`에는 다음 항목을 저장한다.
+
+| 항목 | JSON 키 | 설명 |
+|---|---|---|
+| 모델 식별 정보 | `model_key`, `model_name` | 모델과 실험 조합을 식별하는 이름 |
+| 실험 정보 | `experiment` | 특성 구성과 비교 기준 |
+| 정확도 | `accuracy` | 전체 예측 중 정답 비율 |
+| 정밀도 | `precision` | 이탈 예측 고객 중 실제 이탈 비율 |
+| 재현율 | `recall` | 실제 이탈 고객 중 탐지한 비율 |
+| F1 점수 | `f1_score` | Precision과 Recall의 조화평균 |
+| ROC-AUC | `auc_score` | 임계값 전반의 이탈 구분 성능 |
+| 혼동행렬 | `confusion_matrix` | TN, FP, FN, TP 결과 |
+| 전체 추론 시간 | `total_time_sec` | Test 데이터 전체 추론 시간(초) |
+| 평균 지연 시간 | `avg_latency_ms` | 회원 1명당 평균 추론 시간(ms) |
+| 평가 표본 수 | `total_samples` | Test 데이터 표본 수 |
+| ROC 데이터 정보 | `parquet` | Parquet 상대경로와 컬럼 정보 |
+
+통합 결과인 `result_data.json`은 모델과 실험 라벨별 최신 결과, threshold, ROC-AUC, PR-AUC, Pipeline·메타데이터 경로를 함께 관리한다.
+
+### 10.5 ROC Parquet 저장 항목
+
+ROC Curve 재생성과 임계값 재분석을 위해 다음 두 컬럼을 저장한다.
+
+| 컬럼 | 설명 |
+|---|---|
+| `y_true` | 실제 이탈 라벨(0 또는 1) |
+| `y_score` | 모델이 예측한 이탈 확률 또는 점수 |
+
+Accuracy, Precision, Recall, F1 Score, Confusion Matrix 등은 `y_true`, `y_score`와 적용한 threshold를 이용해 다시 계산할 수 있다.
+
+## 11. 발표 전 최종 점검
 
 ```text
 [ ] 데이터 출처·Target·예측 시점이 문서화되어 있다.

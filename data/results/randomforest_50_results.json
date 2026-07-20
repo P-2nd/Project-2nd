@@ -24,7 +24,7 @@
     ],
     "auc_score": 0.6607152859337125,
     "parquet": {
-        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\randomforest_50.parquet",
+        "path": "data/results/roc/randomforest_50.parquet",
         "columns": [
             "y_true",
             "y_score"

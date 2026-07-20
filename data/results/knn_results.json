@@ -20,7 +20,7 @@
     ],
     "auc_score": 0.5924918448800689,
     "parquet": {
-        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\knn_100.parquet",
+        "path": "data/results/roc/knn_100_auc_roc.parquet",
         "columns": [
             "y_true",
             "y_score"

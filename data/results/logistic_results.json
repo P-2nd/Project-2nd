@@ -20,7 +20,7 @@
     ],
     "auc_score": 0.6816027589638209,
     "parquet": {
-        "path": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_100.parquet",
+        "path": "data/results/roc/logistic_regression_100_auc_roc.parquet",
         "columns": [
             "y_true",
             "y_score"

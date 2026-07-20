@@ -47,7 +47,19 @@ def load_result(model_key):
 
     with open(result_path, encoding="utf-8") as f:
 
-        return json.load(f)
+        result = json.load(f)
+
+    parquet = result.get("parquet")
+
+    if isinstance(parquet, dict) and isinstance(parquet.get("path"), str):
+
+        parquet_path = resolve_artifact_path(parquet["path"])
+
+        if parquet_path is not None:
+
+            parquet["path"] = parquet_path.relative_to(BASE_DIR).as_posix()
+
+    return result
 
 
 def load_all_results():
@@ -56,9 +68,9 @@ def load_all_results():
 
     for file in sorted(RESULT_DIR.glob("*_results.json")):
 
-        with open(file, encoding="utf-8") as f:
+        model_key = file.stem.replace("_results", "")
 
-            results[file.stem.replace("_results", "")] = json.load(f)
+        results[model_key] = load_result(model_key)
 
     return results
 
@@ -94,6 +106,31 @@ def load_params(model_key):
 # ROC Data
 # =====================================================
 
+def resolve_artifact_path(path_value, *, base_dir=BASE_DIR):
+    """Resolve both portable and legacy artifact paths inside this project."""
+
+    declared_path = Path(path_value)
+
+    candidates = []
+
+    if declared_path.is_absolute():
+        candidates.append(declared_path)
+    else:
+        candidates.append(base_dir / declared_path)
+
+    filename = path_value.replace("\\", "/").rsplit("/", 1)[-1]
+
+    if filename not in {"", ".", ".."}:
+        candidates.append(base_dir / "data" / "results" / "roc" / filename)
+
+    for candidate in candidates:
+
+        if candidate.exists():
+            return candidate
+
+    return None
+
+
 def load_parquet(model_key):
 
     result = load_result(model_key)
@@ -102,9 +139,9 @@ def load_parquet(model_key):
 
         return None
 
-    parquet_path = Path(result["parquet"]["path"])
+    parquet_path = resolve_artifact_path(result["parquet"]["path"])
 
-    if not parquet_path.exists():
+    if parquet_path is None:
 
         return None
 

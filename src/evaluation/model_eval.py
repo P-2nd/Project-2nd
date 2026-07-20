@@ -456,7 +456,7 @@ def load_or_train(
 
             "parquet": {
 
-                "path": str(roc_path),
+                "path": roc_path.relative_to(BASE_DIR).as_posix(),
 
                 "columns": [
                     "y_true",

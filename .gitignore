@@ -22,6 +22,9 @@ dist/
 .vscode/
 .DS_Store
 
+# 개인 작업 메모
+JIHEUM.MD
+
 # 테스트 및 커버리지 결과
 .coverage
 htmlcov/

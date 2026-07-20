@@ -32,3 +32,6 @@ data/debug/*.json
 
 # Processed data exports
 data/processed/*.csv
+
+# Reproducible trained model artifacts
+data/evaluation/saved_models/

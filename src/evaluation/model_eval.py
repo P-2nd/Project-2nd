@@ -4,6 +4,7 @@
 
 from pathlib import Path
 import sys
+import argparse
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -105,6 +106,17 @@ EXCLUDE_FILES = {
 }
 
 
+parser = argparse.ArgumentParser(
+    description="학습된 이탈 예측 모델을 데이터셋별로 평가합니다."
+)
+parser.add_argument(
+    "--baseline-only",
+    action="store_true",
+    help="특성 제외 부가 실험은 건너뛰고 full·50 기본 결과만 생성합니다."
+)
+ARGS = parser.parse_args()
+
+
 # =====================================================
 # Import
 # =====================================================
@@ -149,7 +161,7 @@ def load_or_train(
     ]
 
 
-    if EXCLUDE_FEATURES is not None:
+    if EXCLUDE_FEATURES is not None and not ARGS.baseline_only:
 
         for feature in EXCLUDE_FEATURES:
 
@@ -508,7 +520,7 @@ model_files = sorted(
     [
         file
         for file in MODEL_DIR.glob("*.py")
-        if file.name not in EXCLUDE_FILES
+        if file.name.startswith("model_") and file.name not in EXCLUDE_FILES
     ]
 )
 

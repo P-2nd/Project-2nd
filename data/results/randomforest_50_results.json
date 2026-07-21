@@ -5,24 +5,24 @@
         "comparison_axis": "feature_set",
         "feature_set": "full"
     },
-    "accuracy": 0.64843,
-    "precision": 0.5670372407291012,
-    "recall": 0.3742416385792066,
-    "f1_score": 0.4508949489269984,
-    "total_time_sec": 16.65691340000194,
-    "avg_latency_ms": 0.0832845670000097,
+    "accuracy": 0.6474,
+    "precision": 0.5649758548938008,
+    "recall": 0.373100855587244,
+    "f1_score": 0.44941521837572806,
+    "total_time_sec": 5.0266337920038495,
+    "avg_latency_ms": 0.02513316896001925,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            100817,
-            22043
+            100699,
+            22161
         ],
         [
-            48271,
-            28869
+            48359,
+            28781
         ]
     ],
-    "auc_score": 0.6607152859337125,
+    "auc_score": 0.6606035513102279,
     "parquet": {
         "path": "data/results/roc/randomforest_50.parquet",
         "columns": [

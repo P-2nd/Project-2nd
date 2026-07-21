@@ -1,304 +1,151 @@
-# =====================================================
-# components/compare_view.py
-# =====================================================
-
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import roc_curve
+from sklearn.metrics import average_precision_score, precision_recall_curve, roc_curve
 
-from utils import (
-    load_result,
-    load_parquet,
-    get_plot_paths
-)
+from utils import display_model_name, load_parquet, load_result
 
 
 METRIC_LABELS = {
-    "Accuracy": "Accuracy (정확도)",
-    "Precision": "Precision (정밀도)",
-    "Recall": "Recall (재현율)",
-    "F1": "F1 Score (F1 점수)",
-    "AUC": "ROC AUC (ROC-AUC)",
-    "Latency(ms)": "Latency (지연 시간, ms)",
+    "Accuracy": "Accuracy",
+    "Precision": "Precision",
+    "Recall": "Recall",
+    "F1": "F1 Score",
+    "ROC-AUC": "ROC-AUC",
+    "PR-AUC": "PR-AUC",
+    "Latency(ms)": "평균 추론 시간(ms)",
+}
+
+WEIGHT_PRESETS = {
+    "이탈 탐지 우선": {"Recall": 0.40, "F1": 0.25, "PR-AUC": 0.20, "Precision": 0.10, "ROC-AUC": 0.05},
+    "균형": {"Recall": 0.25, "F1": 0.25, "PR-AUC": 0.20, "Precision": 0.15, "ROC-AUC": 0.15},
+    "캠페인 비용 우선": {"Precision": 0.40, "F1": 0.25, "PR-AUC": 0.20, "Recall": 0.10, "ROC-AUC": 0.05},
 }
 
 
 def show_compare(model_keys):
+    st.title("📊 모델 비교")
+    st.caption("동일한 Test 조건에서 모델의 이탈 탐지 성능과 운영 적합성을 비교합니다.")
 
-    if len(model_keys) < 2:
-        st.info("2개 이상의 모델을 선택하세요.")
+    rows, roc_sources = _load_comparison_data(model_keys)
+    if len(rows) < 2:
+        st.info("결과가 존재하는 모델을 2개 이상 선택하세요.")
         return
 
-    # =====================================================
-    # Result Load
-    # =====================================================
-
-    rows = []
-
-    for key in model_keys:
-
-        result = load_result(key)
-
-        if result is None:
-            continue
-
-        rows.append({
-            "Model": result["model_name"],
-            "Accuracy": result["accuracy"],
-            "Precision": result["precision"],
-            "Recall": result["recall"],
-            "F1": result["f1_score"],
-            "AUC": result["auc_score"],
-            "Latency(ms)": result["avg_latency_ms"]
-        })
-
     df = pd.DataFrame(rows)
-
-    st.title("Model Compare (모델 비교)")
-
-    # =====================================================
-    # Metric Table
-    # =====================================================
-
-    st.divider()
-    st.subheader("Metric Table (성능 지표 표)")
-
     st.dataframe(
-        df.rename(columns={"Model": "Model (모델)", **METRIC_LABELS}),
-        hide_index=True
+        df.rename(columns={"Model": "모델", **METRIC_LABELS}),
+        hide_index=True,
+        width="stretch",
+        column_config={key: st.column_config.NumberColumn(format="%.4f") for key in METRIC_LABELS.values()},
     )
 
-    # =====================================================
-    # Best Model
-    # =====================================================
+    preset = st.selectbox("모델 선정 기준", list(WEIGHT_PRESETS), index=0)
+    weights = WEIGHT_PRESETS[preset]
+    ranked = df.copy()
+    ranked["Business Score"] = sum(ranked[key] * weight for key, weight in weights.items())
+    ranked = ranked.sort_values("Business Score", ascending=False).reset_index(drop=True)
+    ranked.insert(0, "순위", range(1, len(ranked) + 1))
 
-    st.divider()
-    st.subheader("🏆 Best Model (지표별 최고 모델)")
-
-    best_df = pd.DataFrame({
-        "Metric": [
-            METRIC_LABELS["Accuracy"],
-            METRIC_LABELS["Precision"],
-            METRIC_LABELS["Recall"],
-            METRIC_LABELS["F1"],
-            METRIC_LABELS["AUC"],
-            METRIC_LABELS["Latency(ms)"],
-        ],
-        "Best Model": [
-            df.loc[df["Accuracy"].idxmax(), "Model"],
-            df.loc[df["Precision"].idxmax(), "Model"],
-            df.loc[df["Recall"].idxmax(), "Model"],
-            df.loc[df["F1"].idxmax(), "Model"],
-            df.loc[df["AUC"].idxmax(), "Model"],
-            df.loc[df["Latency(ms)"].idxmin(), "Model"]
-        ],
-        "Value": [
-            f'{df["Accuracy"].max():.4f}',
-            f'{df["Precision"].max():.4f}',
-            f'{df["Recall"].max():.4f}',
-            f'{df["F1"].max():.4f}',
-            f'{df["AUC"].max():.4f}',
-            f'{df["Latency(ms)"].min():.4f}'
-        ]
-    }).rename(
-        columns={
-            "Metric": "Metric (지표)",
-            "Best Model": "Best Model (최고 모델)",
-            "Value": "Value (값)",
-        }
+    winner = ranked.iloc[0]
+    st.success(
+        f"**{preset} 기준 추천:** {winner['Model']} · Business Score {winner['Business Score']:.4f}"
     )
-
+    st.caption("가중치: " + ", ".join(f"{key} {value:.0%}" for key, value in weights.items()))
     st.dataframe(
-        best_df,
-        hide_index=True
+        ranked[["순위", "Model", "Business Score", "Recall", "Precision", "F1", "PR-AUC", "ROC-AUC"]]
+        .rename(columns={"Model": "모델"}),
+        hide_index=True,
+        width="stretch",
     )
 
-    # =====================================================
-    # Overall Ranking
-    # =====================================================
+    metric = st.selectbox("비교 지표", list(METRIC_LABELS), index=2)
+    chart = px.bar(
+        df,
+        x="Model",
+        y=metric,
+        color="Model",
+        text_auto=".4f",
+        labels={"Model": "모델", metric: METRIC_LABELS[metric]},
+    )
+    chart.update_layout(showlegend=False)
+    st.plotly_chart(chart, width="stretch")
 
-    st.divider()
-    st.subheader("🏆 Overall Ranking (종합 순위)")
+    roc_tab, pr_tab, cm_tab = st.tabs(["ROC Curve", "Precision-Recall Curve", "Confusion Matrix"])
+    with roc_tab:
+        st.plotly_chart(_roc_figure(roc_sources), width="stretch")
+    with pr_tab:
+        st.plotly_chart(_pr_figure(roc_sources), width="stretch")
+    with cm_tab:
+        _show_confusion_matrices(model_keys)
 
-    ranking = df.copy()
-
-    ranking["Accuracy Rank"] = ranking["Accuracy"].rank(ascending=False, method="min")
-    ranking["Precision Rank"] = ranking["Precision"].rank(ascending=False, method="min")
-    ranking["Recall Rank"] = ranking["Recall"].rank(ascending=False, method="min")
-    ranking["F1 Rank"] = ranking["F1"].rank(ascending=False, method="min")
-    ranking["AUC Rank"] = ranking["AUC"].rank(ascending=False, method="min")
-    ranking["Latency Rank"] = ranking["Latency(ms)"].rank(ascending=True, method="min")
-
-    ranking["Total Score"] = (
-            ranking["Accuracy Rank"] +
-            ranking["Precision Rank"] +
-            ranking["Recall Rank"] +
-            ranking["F1 Rank"] +
-            ranking["AUC Rank"] +
-            ranking["Latency Rank"]
+    st.info(
+        "프로젝트의 최종 후보는 **LightGBM · 상위 50% 피처**입니다. 모델 순위는 절대적인 정답이 아니라 "
+        "캠페인 목적에 따라 달라지며, 최종 결정은 임계값·대상 규모·비용을 함께 고려해야 합니다."
     )
 
-    ranking = ranking.sort_values("Total Score")
 
-    ranking.insert(
-        0,
-        "Rank",
-        range(1, len(ranking) + 1)
-    )
-
-    st.dataframe(
-        ranking[
-            [
-                "Rank",
-                "Model",
-                "Total Score",
-                "Accuracy",
-                "Precision",
-                "Recall",
-                "F1",
-                "AUC",
-                "Latency(ms)"
-            ]
-        ].rename(
-            columns={
-                "Rank": "Rank (순위)",
-                "Model": "Model (모델)",
-                "Total Score": "Total Score (종합 점수)",
-                **METRIC_LABELS,
-            }
-        ),
-        hide_index=True
-    )
-
-    # =====================================================
-    # Metric Compare
-    # =====================================================
-
-    st.divider()
-
-    metric = st.selectbox(
-        "Compare Metric (비교 지표)",
-        list(METRIC_LABELS.values())
-    )
-
-    metric_key = next(
-        key for key, label in METRIC_LABELS.items()
-        if label == metric
-    )
-
-    fig, ax = plt.subplots(figsize=(8, 4))
-
-    ax.bar(
-        df["Model"],
-        df[metric_key]
-    )
-
-    ax.set_ylabel(metric_key)
-
-    plt.xticks(rotation=20)
-
-    st.pyplot(fig)
-
-    # =====================================================
-    # ROC Curve
-    # =====================================================
-
-    st.divider()
-    st.subheader("ROC Curve (ROC 곡선)")
-
-    fig, ax = plt.subplots(figsize=(7, 7))
-
+def _load_comparison_data(model_keys):
+    rows = []
+    sources = {}
     for key in model_keys:
-
         result = load_result(key)
         roc_df = load_parquet(key)
-
-        if roc_df is None:
+        if result is None or roc_df is None:
             continue
-
-        fpr, tpr, _ = roc_curve(
-            roc_df["y_true"],
-            roc_df["y_score"]
+        pr_auc = average_precision_score(roc_df["y_true"], roc_df["y_score"])
+        label = display_model_name(key)
+        rows.append(
+            {
+                "Model": label,
+                "Accuracy": result["accuracy"],
+                "Precision": result["precision"],
+                "Recall": result["recall"],
+                "F1": result["f1_score"],
+                "ROC-AUC": result["auc_score"],
+                "PR-AUC": pr_auc,
+                "Latency(ms)": result["avg_latency_ms"],
+            }
         )
-
-        ax.plot(
-            fpr,
-            tpr,
-            label=f"{result['model_name']} ({result['auc_score']:.3f})"
-        )
-
-    ax.plot([0, 1], [0, 1], "--")
-    ax.set_xlabel("False Positive Rate")
-    ax.set_ylabel("True Positive Rate")
-    ax.legend()
-
-    st.pyplot(fig)
-
-    # =====================================================
-    # Confusion Matrix
-    # =====================================================
-
-    st.divider()
-    st.subheader("Confusion Matrix (혼동 행렬)")
-
-    cols = st.columns(len(model_keys))
-
-    for col, key in zip(cols, model_keys):
-
-        result = load_result(key)
-
-        cm = pd.DataFrame(
-            result["confusion_matrix"],
-            index=["Actual 0", "Actual 1"],
-            columns=["Pred 0", "Pred 1"]
-        )
-
-        fig, ax = plt.subplots(figsize=(4, 4))
-
-        sns.heatmap(
-            cm,
-            annot=True,
-            fmt="d",
-            cmap="Blues",
-            cbar=False,
-            ax=ax
-        )
-
-        ax.set_title(result["model_name"])
-
-        col.pyplot(fig)
+        sources[label] = roc_df
+    return rows, sources
 
 
+def _roc_figure(sources):
+    fig = go.Figure()
+    for label, roc_df in sources.items():
+        fpr, tpr, _ = roc_curve(roc_df["y_true"], roc_df["y_score"])
+        fig.add_trace(go.Scatter(x=fpr, y=tpr, mode="lines", name=label))
+    fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode="lines", name="무작위 기준", line={"dash": "dash"}))
+    fig.update_layout(xaxis_title="False Positive Rate", yaxis_title="True Positive Rate")
+    return fig
 
-    # =====================================================
-    # Saved Plot
-    # =====================================================
 
-    st.divider()
-    st.subheader("Saved Plot (저장된 그래프)")
+def _pr_figure(sources):
+    fig = go.Figure()
+    for label, roc_df in sources.items():
+        precision, recall, _ = precision_recall_curve(roc_df["y_true"], roc_df["y_score"])
+        fig.add_trace(go.Scatter(x=recall, y=precision, mode="lines", name=label))
+    fig.update_layout(xaxis_title="Recall", yaxis_title="Precision")
+    return fig
 
-    cols = st.columns(len(model_keys))
 
-    for col, key in zip(cols, model_keys):
-
-        plots = get_plot_paths(key)
-
-        with col:
-
-            st.write(key)
-
-            if plots["roc"].exists():
-                st.image(
-                    str(plots["roc"]),
-                    caption="ROC Curve (ROC 곡선)",
-                    width="stretch"
-                )
-
-            if plots["cm"].exists():
-                st.image(
-                    str(plots["cm"]),
-                    caption="Confusion Matrix (혼동 행렬)",
-                    width="stretch"
+def _show_confusion_matrices(model_keys):
+    for start in range(0, len(model_keys), 2):
+        columns = st.columns(2)
+        for column, key in zip(columns, model_keys[start:start + 2]):
+            result = load_result(key)
+            if result is None:
+                continue
+            cm = result["confusion_matrix"]
+            with column:
+                st.markdown(f"**{display_model_name(key)}**")
+                st.dataframe(
+                    pd.DataFrame(
+                        cm,
+                        index=["실제 유지", "실제 이탈"],
+                        columns=["예측 유지", "예측 이탈"],
+                    ),
+                    width="stretch",
                 )

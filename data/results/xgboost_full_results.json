@@ -5,24 +5,24 @@
         "comparison_axis": "feature_set",
         "feature_set": "full"
     },
-    "accuracy": 0.66287,
-    "precision": 0.6001402004041071,
-    "recall": 0.37733990147783253,
-    "f1_score": 0.4633482434217857,
-    "total_time_sec": 0.35302129999763565,
-    "avg_latency_ms": 0.0017651064999881783,
+    "accuracy": 0.662955,
+    "precision": 0.6003382070899754,
+    "recall": 0.377378791807104,
+    "f1_score": 0.4634365721836171,
+    "total_time_sec": 0.07785975000297185,
+    "avg_latency_ms": 0.00038929875001485925,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            103466,
-            19394
+            103480,
+            19380
         ],
         [
-            48032,
-            29108
+            48029,
+            29111
         ]
     ],
-    "auc_score": 0.6875410842806973,
+    "auc_score": 0.6877101608260409,
     "parquet": {
         "path": "data/results/roc/xgboost_full.parquet",
         "columns": [

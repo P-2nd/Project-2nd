@@ -67,7 +67,7 @@ def save_plot(result_path):
     # ==========================
 
     roc_files = list(
-        ROC_DIR.glob(f"{save_name}_*.parquet")
+        ROC_DIR.glob(f"{save_name}.parquet")
     )
 
     if not roc_files:

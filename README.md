@@ -261,10 +261,10 @@ python src/evaluation/model_eval.py
 
 ### 전처리 결과
 
-| 파일 | 구성 | 크기 |
-|------|------|------|
-| `data/processed/churn_preprocessed_full.csv` | 전체 입력 특성 22개 + 타깃(`Churn`) | 1,000,000행 × 23열 |
-| `data/processed/churn_preprocessed_pct50.csv` | 중요도 상위 입력 특성 11개 + 타깃(`Churn`) | 1,000,000행 × 12열 |
+| 파일 | 구성                                         | 크기 |
+|------|--------------------------------------------|------|
+| `data/processed/churn_preprocessed_full.csv` | 전체 입력 특성 22개 + 타깃(`Churn`)                 | 1,000,000행 × 23열 |
+| `data/processed/churn_preprocessed_pct50.csv` | (XGBoost 기반)중요도 상위 입력 특성 11개 + 타깃(`Churn`) | 1,000,000행 × 12열 |
 
 ### 실행 방법
 
@@ -273,6 +273,9 @@ python src/evaluation/model_eval.py
 ```bash
 (cd src/preprocessing && ../../.venv/bin/python preprocessing.py)
 ```
+### 전처리 파이프라인
+
+![Preprocessing_Pipeline.png](data/eda/Preprocessing_Pipeline.png)
 
 ### 핵심 전처리 코드
 
@@ -356,8 +359,8 @@ full_data[top_features + ["Churn"]].to_csv(
     "../../data/processed/churn_preprocessed_pct50.csv", index=False
 )
 ```
-
-EDA 분석 근거는 [EDA.md](EDA.md), 전처리 후 모델 평가 결과는 [RESULT.md](RESULT.md)에서 확인할 수 있습니다.
+ 
+> EDA 분석 근거는 [EDA.md](EDA.md), 전처리 후 모델 평가 결과는 [RESULT.md](RESULT.md)에서 확인할 수 있습니다.
 
 ---
 

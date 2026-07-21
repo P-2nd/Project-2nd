@@ -3,26 +3,31 @@
     "model_name": "LIGHTGBM_50",
     "experiment": {
         "comparison_axis": "feature_set",
-        "feature_set": "full"
+        "dataset": "50",
+        "feature_set": "pct50",
+        "excluded_feature": null,
+        "feature_count": 11
     },
-    "accuracy": 0.663495,
-    "precision": 0.6003549499194223,
-    "recall": 0.38151413015296864,
-    "f1_score": 0.4665467141192603,
-    "total_time_sec": 1.1396065999979328,
-    "avg_latency_ms": 0.005698032999989664,
+    "accuracy": 0.66345,
+    "precision": 0.6003880718954249,
+    "recall": 0.38106040964480165,
+    "f1_score": 0.4662172878667724,
+    "total_time_sec": 0.3666298750031274,
+    "avg_latency_ms": 0.0018331493750156369,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            103269,
-            19591
+            103295,
+            19565
         ],
         [
-            47710,
-            29430
+            47745,
+            29395
         ]
     ],
-    "auc_score": 0.6875808563372371,
+    "auc_score": 0.6875635835991827,
+    "pr_auc": 0.5698644921077336,
+    "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/lightgbm_50.parquet",
         "columns": [

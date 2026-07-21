@@ -5,24 +5,24 @@
         "comparison_axis": "feature_set",
         "feature_set": "full"
     },
-    "accuracy": 0.63267,
-    "precision": 0.542766680635098,
-    "recall": 0.3022297122115634,
-    "f1_score": 0.3882625276866455,
-    "total_time_sec": 242.99335810000048,
-    "avg_latency_ms": 1.2149667905000023,
+    "accuracy": 0.63322,
+    "precision": 0.5438856930784932,
+    "recall": 0.30396681358568833,
+    "f1_score": 0.3899810398163856,
+    "total_time_sec": 53.225572625000495,
+    "avg_latency_ms": 0.2661278631250025,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            103220,
-            19640
+            103196,
+            19664
         ],
         [
-            53826,
-            23314
+            53692,
+            23448
         ]
     ],
-    "auc_score": 0.6283074249296781,
+    "auc_score": 0.6279282500225484,
     "parquet": {
         "path": "data/results/roc/knn_50.parquet",
         "columns": [

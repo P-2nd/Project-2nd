@@ -442,13 +442,6 @@ def load_or_train(
         # ROC parquet 저장
         # ==========================
 
-        label = (
-            "100"
-            if feature is None
-            else f"without_{feature}"
-        )
-
-
         roc_path = (
             ROC_SAVE_DIR
             /
@@ -481,12 +474,17 @@ def load_or_train(
 
                 "comparison_axis": "feature_set",
 
-                "feature_set":
-                    (
-                        "full"
-                        if feature is None
-                        else f"without_{feature}"
-                    )
+                "dataset": data_label,
+
+                "feature_set": (
+                    "pct50"
+                    if data_label == "50"
+                    else "full"
+                ),
+
+                "excluded_feature": feature,
+
+                "feature_count": X_selected.shape[1]
             },
 
             "accuracy": metrics["accuracy"],
@@ -509,6 +507,10 @@ def load_or_train(
 
 
             "auc_score": auc_score,
+
+            "pr_auc": metrics["pr_auc"],
+
+            "threshold": 0.5,
 
 
             "parquet": {

@@ -1,179 +1,116 @@
-# =====================================================
-# components/single_view.py
-# =====================================================
-
+import pandas as pd
 import streamlit as st
 
 from utils import (
-    load_result,
+    calculate_threshold_metrics,
+    display_model_name,
+    get_plot_paths,
+    load_feature_importance,
     load_params,
-    get_plot_paths
+    load_parquet,
+    load_result,
 )
 
 
 def show_single(model_key):
-
     result = load_result(model_key)
-
     if result is None:
-
-        st.error("결과 파일이 없습니다.")
-
+        st.error("선택한 모델의 결과 파일이 없습니다.")
         return
 
-    st.title(result["model_name"])
+    st.title(f"🔎 {display_model_name(model_key)}")
+    st.caption("동일한 Test 데이터에서 계산한 성능과 모델 산출물을 상세히 확인합니다.")
 
-    st.subheader("모델 성능 안내")
+    roc_df = load_parquet(model_key)
+    threshold_metrics = calculate_threshold_metrics(roc_df, 0.5) if roc_df is not None else None
 
-    st.markdown(
-        """
-선택한 모델이 회원 이탈을 얼마나 잘 예측하는지 확인하는 화면입니다.
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Accuracy", f"{result['accuracy']:.4f}")
+    c2.metric("Precision", f"{result['precision']:.4f}")
+    c3.metric("Recall", f"{result['recall']:.4f}")
+    c4.metric("F1 Score", f"{result['f1_score']:.4f}")
 
-- **Accuracy**: 전체 회원 중 예측이 맞은 비율
-- **Precision**: 이탈로 예측한 회원 중 실제 이탈한 회원의 비율
-- **Recall**: 실제 이탈 회원 중 모델이 찾아낸 비율
-- **F1 Score**: Precision과 Recall의 균형 지표
-- **ROC AUC**: 여러 임계값에서 이탈 회원과 유지 회원을 구분하는 성능
-"""
-    )
+    c5, c6, c7, c8 = st.columns(4)
+    c5.metric("ROC-AUC", f"{result['auc_score']:.4f}")
+    c6.metric("PR-AUC", f"{threshold_metrics['pr_auc']:.4f}" if threshold_metrics else "N/A")
+    c7.metric("평균 추론 시간", f"{result['avg_latency_ms']:.4f} ms")
+    c8.metric("Test 표본", f"{result['total_samples']:,}명")
 
-    st.caption("이탈 회원을 놓치는 비용이 크다면 Accuracy와 함께 Recall, F1 Score를 확인하세요.")
-
-    st.divider()
-
-    c1, c2, c3 = st.columns(3)
-
-    c1.metric(
-        "Accuracy (정확도)",
-        f"{result['accuracy']:.4f}"
-    )
-
-    c2.metric(
-        "Precision (정밀도)",
-        f"{result['precision']:.4f}"
-    )
-
-    c3.metric(
-        "Recall (재현율)",
-        f"{result['recall']:.4f}"
-    )
-
-    c4, c5, c6 = st.columns(3)
-
-    c4.metric(
-        "F1 Score (F1 점수)",
-        f"{result['f1_score']:.4f}",
-        help=(
-            "Precision(정밀도)과 Recall(재현율)의 조화평균입니다. "
-            "두 값 중 낮은 값의 영향을 크게 받아, 이탈 탐지와 오탐 사이의 균형을 확인할 때 사용합니다."
+    if model_key == "lightgbm_50":
+        st.success(
+            "현재 최종 후보 모델입니다. 전체 피처와 유사한 성능을 11개 피처로 달성했지만, "
+            "임계값 0.50에서 Recall이 약 38%이므로 운영 목적에 맞는 조정이 필요합니다."
         )
-    )
 
-    c5.metric(
-        "ROC AUC (ROC-AUC)",
-        f"{result['auc_score']:.4f}",
-        help=(
-            "여러 임계값에서 이탈 회원과 유지 회원을 구분하는 성능입니다. "
-            "0.5는 무작위 분류 수준이며, 1에 가까울수록 두 집단을 더 잘 구분합니다."
-        )
-    )
+    tab1, tab2, tab3 = st.tabs(["평가 그래프", "주요 피처", "실험 정보"])
+    with tab1:
+        _show_evaluation_plots(model_key, result)
+    with tab2:
+        _show_feature_importance(model_key)
+    with tab3:
+        _show_experiment(model_key, result)
 
-    c6.metric(
-        "Latency (지연 시간, ms)",
-        f"{result['avg_latency_ms']:.4f}"
-    )
 
-    st.divider()
-
-    c1, c2 = st.columns(2)
-
+def _show_evaluation_plots(model_key, result):
+    left, right = st.columns(2)
     plots = get_plot_paths(model_key)
-
-    with c1:
-
-        st.subheader("Confusion Matrix (혼동 행렬)")
-
+    with left:
+        st.subheader("Confusion Matrix")
         if plots["cm"].exists():
-
-            st.image(
-                str(plots["cm"]),
-                width="stretch"
-            )
-
+            st.image(str(plots["cm"]), width="stretch")
         else:
-
-            st.warning("Confusion Matrix 없음")
-
-    with c2:
-
-        st.subheader("ROC Curve (ROC 곡선)")
-
+            st.warning("혼동행렬 이미지가 없습니다.")
+    with right:
+        st.subheader("ROC Curve")
         if plots["roc"].exists():
-
-            st.image(
-                str(plots["roc"]),
-                width="stretch"
-            )
-
+            st.image(str(plots["roc"]), width="stretch")
         else:
-
-            st.warning("ROC Plot 없음")
-
-    st.divider()
-
-    st.subheader("Hyper Parameters (하이퍼파라미터)")
-
-    params = load_params(model_key)
-
-    if params:
-
-        st.json(params)
-
-    else:
-
-        st.info("Parameter 없음")
-
-    st.divider()
-
-    st.subheader("Experiment (실험 정보)")
-
-    c1, c2 = st.columns(2)
-
-    c1.write(f"Total Samples (전체 샘플 수): {result["total_samples"]:.4f}")
-
-    c2.write(f"Inference (추론 시간, ms): {result['avg_latency_ms']:.4f}")
-
-    st.write(
-        "Execution (실행 시간, sec):",
-        f"{result['total_time_sec']:.4f}"
-    )
-
-    st.write(
-        "Feature Set (피처 구성):",
-        result["experiment"]["feature_set"]
-    )
-
-    st.write(
-        "Comparison Axis (비교 기준):",
-        result["experiment"]["comparison_axis"]
-    )
-
-    st.divider()
-
-    st.subheader("Confusion Matrix Value (혼동 행렬 값)")
+            st.warning("ROC 이미지가 없습니다.")
 
     cm = result["confusion_matrix"]
-
-    st.table({
-        "": ["Actual 0", "Actual 1"],
-        "Predicted 0": [cm[0][0], cm[1][0]],
-        "Predicted 1": [cm[0][1], cm[1][1]]
-    })
-
-    st.divider()
-
-    st.subheader("Parquet (ROC 데이터 파일)")
-
-    st.code(
-        result["parquet"]["path"]
+    tn, fp, fn, tp = cm[0][0], cm[0][1], cm[1][0], cm[1][1]
+    st.dataframe(
+        pd.DataFrame(
+            [
+                ["TP", tp, "실제 이탈 고객을 이탈로 탐지"],
+                ["FP", fp, "유지 고객을 이탈로 잘못 분류"],
+                ["FN", fn, "실제 이탈 고객을 놓침"],
+                ["TN", tn, "유지 고객을 정확히 분류"],
+            ],
+            columns=["구분", "인원", "해석"],
+        ),
+        hide_index=True,
+        width="stretch",
     )
+
+
+def _show_feature_importance(model_key):
+    with st.spinner("피처 중요도를 불러오는 중입니다."):
+        importance = load_feature_importance(model_key)
+    if importance is None:
+        st.info(
+            "이 모델은 피처 중요도를 제공하지 않거나 모델 파일이 너무 커 자동 로드를 건너뛰었습니다. "
+            "LightGBM·XGBoost·Logistic Regression 모델에서 확인할 수 있습니다."
+        )
+        return
+    st.bar_chart(importance.set_index("Feature"), horizontal=True)
+    st.dataframe(importance, hide_index=True, width="stretch")
+    st.caption("피처 중요도는 연관성과 예측 기여도를 나타내며 인과관계를 의미하지 않습니다.")
+
+
+def _show_experiment(model_key, result):
+    feature_set = "상위 50% 피처(11개)" if "_50" in model_key else "전체 피처(22개)"
+    left, right = st.columns(2)
+    left.write(f"**피처 구성:** {feature_set}")
+    left.write(f"**Test 표본:** {result['total_samples']:,}명")
+    right.write(f"**전체 추론 시간:** {result['total_time_sec']:.4f}초")
+    right.write(f"**기본 임계값:** 0.50")
+
+    params = load_params(model_key)
+    with st.expander("하이퍼파라미터"):
+        if params:
+            st.json(params)
+        else:
+            st.info("저장된 하이퍼파라미터가 없습니다.")
+    with st.expander("평가 원천 데이터"):
+        st.code(result.get("parquet", {}).get("path", "ROC 데이터 경로 없음"))

@@ -25,6 +25,9 @@ dist/
 # 개인 작업 메모
 JIHEUM.MD
 
+# 임시 산출물
+tmp/
+
 # 테스트 및 커버리지 결과
 .coverage
 htmlcov/

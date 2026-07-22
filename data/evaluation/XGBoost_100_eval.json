@@ -2,7 +2,7 @@
   "metadata": {
     "model": "XGBoost",
     "training_fraction": 1.0,
-    "input_path": "/Users/jinho/Desktop/SKN/SKN_33/2nd/Project-2nd/data/processed/churn_preprocessed_full.csv",
+    "input_path": "data/processed/churn_preprocessed_full.csv",
     "rows": {
       "train": 640000,
       "validation": 160000,

@@ -1,7 +1,7 @@
 {
   "model": "XGBoost",
   "training_fraction": 0.5,
-  "input_path": "/Users/choejiheum/SKN_AI/Project-2nd/data/processed/churn_preprocessed_full.csv",
+  "input_path": "data/processed/churn_preprocessed_full.csv",
   "rows": {
     "train": 320000,
     "validation": 160000,

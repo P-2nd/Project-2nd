@@ -535,7 +535,7 @@
           "average_inference_ms": 0.00032663250000041443
         },
         "artifacts": {
-          "roc_source": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_100_auc_roc.parquet"
+          "roc_source": "data/results/roc/logistic_regression_100_auc_roc.parquet"
         }
       }
     },
@@ -585,7 +585,7 @@
           "average_inference_ms": 0.0003060930000015105
         },
         "artifacts": {
-          "roc_source": "C:\\SKN_33\\Project-2nd\\data\\results\\roc\\logistic_without_Late_Payment_Count_without_Late_Payment_Count_auc_roc.parquet"
+          "roc_source": "data/results/roc/logistic_full_without_Late_Payment_Count.parquet"
         }
       }
     }

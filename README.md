@@ -451,9 +451,9 @@ KNN·Logistic Regression·XGBoost·LightGBM·Random Forest는 전체 특성(`ful
 
 #### 이상치 확인
 
-![수치형 변수 이상치 분포](data/eda/korea_desc/boxplot.png)
+![수치형 변수 이상치 분포](data/eda/boxplot.png)
 
-![IQR 기준 이상치 현황](data/eda/korea_desc/iqr_result.png)
+![IQR 기준 이상치 현황](data/eda/iqr_result.png)
 
 나이, 월 방문 횟수, PT 수업 횟수에서 일부 이상치가 확인됐지만 실제 회원의 다양한 이용 행동을 나타낼 수 있어 제거하지 않았습니다. 분포가 치우친 PT 수업 횟수와 연체 횟수에는 `RobustScaler`를 적용했습니다.
 

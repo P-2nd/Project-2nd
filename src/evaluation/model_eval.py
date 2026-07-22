@@ -5,6 +5,7 @@
 from pathlib import Path
 import sys
 import argparse
+import threading
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -148,6 +149,46 @@ from sklearn.metrics import (
 # Function
 # =====================================================
 
+class ProgressSpinner:
+    """오래 걸리는 학습·추론 작업의 경과 시간을 한 줄로 표시한다."""
+
+    FRAMES = ("/", "-", "\\", "|")
+
+    def __init__(self, label, interval_seconds=0.1):
+        self.label = label
+        self.interval_seconds = interval_seconds
+        self._started_at = None
+        self._stop_event = threading.Event()
+        self._thread = None
+
+    def __enter__(self):
+        self._started_at = time.perf_counter()
+        self._thread = threading.Thread(target=self._render, daemon=True)
+        self._thread.start()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._stop_event.set()
+        self._thread.join()
+        elapsed_ms = (time.perf_counter() - self._started_at) * 1000
+        status = "완료" if exc_type is None else "실패"
+        print(f"\r[{status}] {self.label}: {elapsed_ms:,.0f} ms" + " " * 16)
+
+    def _render(self):
+        frame_index = 0
+
+        while not self._stop_event.is_set():
+            elapsed_ms = (time.perf_counter() - self._started_at) * 1000
+            frame = self.FRAMES[frame_index % len(self.FRAMES)]
+            print(
+                f"\r[진행 중] {frame} {self.label}: {elapsed_ms:,.0f} ms 경과...",
+                end="",
+                flush=True,
+            )
+            frame_index += 1
+            self._stop_event.wait(self.interval_seconds)
+
+
 def load_or_train(
     model_name,
     model,
@@ -258,10 +299,11 @@ def load_or_train(
             )
 
 
-            model_instance.fit(
-                X_train,
-                y_train
-            )
+            with ProgressSpinner(f"{save_name} 학습"):
+                model_instance.fit(
+                    X_train,
+                    y_train
+                )
 
 
             joblib.dump(
@@ -296,9 +338,10 @@ def load_or_train(
         start = time.perf_counter()
 
 
-        y_pred = model_instance.predict(
-            X_test
-        )
+        with ProgressSpinner(f"{save_name} 클래스 예측"):
+            y_pred = model_instance.predict(
+                X_test
+            )
 
 
         if hasattr(
@@ -306,20 +349,22 @@ def load_or_train(
             "predict_proba"
         ):
 
-            y_score = (
-                model_instance
-                .predict_proba(X_test)[:, 1]
-            )
+            with ProgressSpinner(f"{save_name} 확률 예측"):
+                y_score = (
+                    model_instance
+                    .predict_proba(X_test)[:, 1]
+                )
 
         elif hasattr(
             model_instance,
             "decision_function"
         ):
 
-            y_score = (
-                model_instance
-                .decision_function(X_test)
-            )
+            with ProgressSpinner(f"{save_name} 점수 예측"):
+                y_score = (
+                    model_instance
+                    .decision_function(X_test)
+                )
 
         else:
 

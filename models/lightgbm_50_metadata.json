@@ -1,0 +1,87 @@
+{
+  "model": "LightGBM",
+  "dataset_label": "50",
+  "purpose": "raw-input deployment pipeline for Streamlit churn prediction",
+  "input_mode": "raw",
+  "input_features": [
+    "Age",
+    "Membership_Start_Date",
+    "Monthly_Visits",
+    "Avg_Workout_Duration_Min",
+    "Group_Class_Attendance",
+    "PT_Session_Count",
+    "Avg_Equipment_Wait_Time_Min",
+    "Late_Payment_Count",
+    "Cardio_Preference",
+    "Supplement_Usage",
+    "Profile_Type"
+  ],
+  "engineered_features": [
+    "Late_Payment_Count",
+    "Monthly_Visits",
+    "PT_Session_Count",
+    "Start_Year",
+    "Membership_Days",
+    "Group_Class_Attendance",
+    "Avg_Equipment_Wait_Time_Min",
+    "Age",
+    "Supplement_Usage_No Protein Supplements",
+    "Cardio_Preference_Rowing",
+    "Avg_Workout_Duration_Min"
+  ],
+  "target_column": "Churn",
+  "target_meaning": {
+    "0": "retained",
+    "1": "churned"
+  },
+  "reference_date": "2026-02-18",
+  "random_state": 42,
+  "train_rows": 800000,
+  "test_rows": 200000,
+  "threshold_from_validation": 0.5,
+  "hyperparameters": {
+    "boosting_type": "gbdt",
+    "class_weight": null,
+    "colsample_bytree": 1.0,
+    "importance_type": "split",
+    "learning_rate": 0.05,
+    "max_depth": -1,
+    "min_child_samples": 20,
+    "min_child_weight": 0.001,
+    "min_split_gain": 0.0,
+    "n_estimators": 200,
+    "n_jobs": -1,
+    "num_leaves": 31,
+    "objective": null,
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 0.0,
+    "subsample": 1.0,
+    "subsample_for_bin": 200000,
+    "subsample_freq": 0,
+    "verbosity": -1
+  },
+  "test_metrics": {
+    "accuracy": 0.66339,
+    "precision": 0.6004830720104802,
+    "recall": 0.38029556650246304,
+    "f1": 0.46567296855405815,
+    "roc_auc": 0.6875616219894604,
+    "pr_auc": 0.5698504826486279,
+    "confusion_matrix": [
+      [
+        103342,
+        19518
+      ],
+      [
+        47804,
+        29336
+      ]
+    ],
+    "threshold": 0.5
+  },
+  "artifacts": {
+    "pipeline": "models/lightgbm_50_pipeline.joblib",
+    "metadata": "models/lightgbm_50_metadata.json"
+  }
+}

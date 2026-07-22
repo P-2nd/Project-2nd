@@ -3,26 +3,31 @@
     "model_name": "KNN_50",
     "experiment": {
         "comparison_axis": "feature_set",
-        "feature_set": "full"
+        "dataset": "50",
+        "feature_set": "pct50",
+        "excluded_feature": null,
+        "feature_count": 11
     },
-    "accuracy": 0.63322,
-    "precision": 0.5438856930784932,
-    "recall": 0.30396681358568833,
-    "f1_score": 0.3899810398163856,
-    "total_time_sec": 53.225572625000495,
-    "avg_latency_ms": 0.2661278631250025,
+    "accuracy": 0.632675,
+    "precision": 0.5427713507599916,
+    "recall": 0.3022815659839253,
+    "f1_score": 0.3883065086885205,
+    "total_time_sec": 286.7583491989999,
+    "avg_latency_ms": 1.4337917459949994,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            103196,
-            19664
+            103217,
+            19643
         ],
         [
-            53692,
-            23448
+            53822,
+            23318
         ]
     ],
-    "auc_score": 0.6279282500225484,
+    "auc_score": 0.6283086655626251,
+    "pr_auc": 0.489263877108235,
+    "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/knn_50.parquet",
         "columns": [

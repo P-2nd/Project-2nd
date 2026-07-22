@@ -3,26 +3,31 @@
     "model_name": "XGBOOST_50",
     "experiment": {
         "comparison_axis": "feature_set",
-        "feature_set": "full"
+        "dataset": "50",
+        "feature_set": "pct50",
+        "excluded_feature": null,
+        "feature_count": 11
     },
-    "accuracy": 0.662875,
-    "precision": 0.6002062919030428,
-    "recall": 0.3771713767176562,
-    "f1_score": 0.4632408549934323,
-    "total_time_sec": 0.08515745900513139,
-    "avg_latency_ms": 0.0004257872950256569,
+    "accuracy": 0.662805,
+    "precision": 0.6,
+    "recall": 0.3772750842623801,
+    "f1_score": 0.46325759083131046,
+    "total_time_sec": 0.3344567690000986,
+    "avg_latency_ms": 0.0016722838450004929,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            103480,
-            19380
+            103458,
+            19402
         ],
         [
-            48045,
-            29095
+            48037,
+            29103
         ]
     ],
-    "auc_score": 0.6876847401957604,
+    "auc_score": 0.6876666069914974,
+    "pr_auc": 0.5701847004085224,
+    "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/xgboost_50.parquet",
         "columns": [

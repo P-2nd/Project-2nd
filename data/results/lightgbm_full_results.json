@@ -3,14 +3,17 @@
     "model_name": "LIGHTGBM_FULL",
     "experiment": {
         "comparison_axis": "feature_set",
-        "feature_set": "full"
+        "dataset": "full",
+        "feature_set": "full",
+        "excluded_feature": null,
+        "feature_count": 22
     },
     "accuracy": 0.663285,
     "precision": 0.5999224853640128,
     "recall": 0.38125486129115893,
     "f1_score": 0.4662222680183572,
-    "total_time_sec": 0.4124174589960603,
-    "avg_latency_ms": 0.0020620872949803017,
+    "total_time_sec": 2.1609953979996135,
+    "avg_latency_ms": 0.010804976989998067,
     "total_samples": 200000,
     "confusion_matrix": [
         [
@@ -22,7 +25,9 @@
             29410
         ]
     ],
-    "auc_score": 0.6875717894185637,
+    "auc_score": 0.6875717894185638,
+    "pr_auc": 0.5697179780238072,
+    "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/lightgbm_full.parquet",
         "columns": [

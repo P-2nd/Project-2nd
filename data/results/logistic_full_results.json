@@ -3,14 +3,17 @@
     "model_name": "LOGISTIC_FULL",
     "experiment": {
         "comparison_axis": "feature_set",
-        "feature_set": "full"
+        "dataset": "full",
+        "feature_set": "full",
+        "excluded_feature": null,
+        "feature_count": 22
     },
     "accuracy": 0.658675,
     "precision": 0.5919936977838589,
     "recall": 0.37018408089188487,
     "f1_score": 0.4555221452100465,
-    "total_time_sec": 0.007695332998991944,
-    "avg_latency_ms": 3.847666499495972e-05,
+    "total_time_sec": 0.10549869799979206,
+    "avg_latency_ms": 0.0005274934899989603,
     "total_samples": 200000,
     "confusion_matrix": [
         [
@@ -23,6 +26,8 @@
         ]
     ],
     "auc_score": 0.6816027589638209,
+    "pr_auc": 0.5609687529041706,
+    "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/logistic_full.parquet",
         "columns": [

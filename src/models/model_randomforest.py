@@ -10,8 +10,10 @@ from sklearn.ensemble import RandomForestClassifier
 RANDOM_STATE = 42
 
 N_ESTIMATORS = 200
-MAX_DEPTH = None
-MIN_SAMPLES_SPLIT = 2
+MAX_DEPTH = 7
+MIN_SAMPLES_SPLIT = 100
+MIN_SAMPLES_LEAF = 50
+MAX_FEATURES = "sqrt"
 
 
 # ==========================
@@ -26,6 +28,10 @@ model = RandomForestClassifier(
     max_depth=MAX_DEPTH,
 
     min_samples_split=MIN_SAMPLES_SPLIT,
+
+    min_samples_leaf=MIN_SAMPLES_LEAF,
+
+    max_features=MAX_FEATURES,
 
     n_jobs=-1
 

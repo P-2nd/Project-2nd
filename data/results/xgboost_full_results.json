@@ -3,14 +3,17 @@
     "model_name": "XGBOOST_FULL",
     "experiment": {
         "comparison_axis": "feature_set",
-        "feature_set": "full"
+        "dataset": "full",
+        "feature_set": "full",
+        "excluded_feature": null,
+        "feature_count": 22
     },
     "accuracy": 0.662955,
     "precision": 0.6003382070899754,
     "recall": 0.377378791807104,
     "f1_score": 0.4634365721836171,
-    "total_time_sec": 0.07785975000297185,
-    "avg_latency_ms": 0.00038929875001485925,
+    "total_time_sec": 0.3851138539994281,
+    "avg_latency_ms": 0.0019255692699971406,
     "total_samples": 200000,
     "confusion_matrix": [
         [
@@ -23,6 +26,8 @@
         ]
     ],
     "auc_score": 0.6877101608260409,
+    "pr_auc": 0.5701620750860463,
+    "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/xgboost_full.parquet",
         "columns": [

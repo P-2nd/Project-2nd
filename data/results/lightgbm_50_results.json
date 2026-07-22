@@ -8,25 +8,25 @@
         "excluded_feature": null,
         "feature_count": 11
     },
-    "accuracy": 0.66345,
-    "precision": 0.6003880718954249,
-    "recall": 0.38106040964480165,
-    "f1_score": 0.4662172878667724,
-    "total_time_sec": 0.3666298750031274,
-    "avg_latency_ms": 0.0018331493750156369,
+    "accuracy": 0.663495,
+    "precision": 0.6003549499194223,
+    "recall": 0.38151413015296864,
+    "f1_score": 0.4665467141192603,
+    "total_time_sec": 2.2476885939995555,
+    "avg_latency_ms": 0.011238442969997778,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            103295,
-            19565
+            103269,
+            19591
         ],
         [
-            47745,
-            29395
+            47710,
+            29430
         ]
     ],
-    "auc_score": 0.6875635835991827,
-    "pr_auc": 0.5698644921077336,
+    "auc_score": 0.687580856337237,
+    "pr_auc": 0.5698770873192802,
     "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/lightgbm_50.parquet",

@@ -3,26 +3,31 @@
     "model_name": "RANDOMFOREST_50",
     "experiment": {
         "comparison_axis": "feature_set",
-        "feature_set": "full"
+        "dataset": "50",
+        "feature_set": "pct50",
+        "excluded_feature": null,
+        "feature_count": 11
     },
-    "accuracy": 0.6474,
-    "precision": 0.5649758548938008,
-    "recall": 0.373100855587244,
-    "f1_score": 0.44941521837572806,
-    "total_time_sec": 5.0266337920038495,
-    "avg_latency_ms": 0.02513316896001925,
+    "accuracy": 0.657275,
+    "precision": 0.6159074358766891,
+    "recall": 0.29603318641431164,
+    "f1_score": 0.3998704220912824,
+    "total_time_sec": 1.0781188989994916,
+    "avg_latency_ms": 0.005390594494997458,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            100699,
-            22161
+            108619,
+            14241
         ],
         [
-            48359,
-            28781
+            54304,
+            22836
         ]
     ],
-    "auc_score": 0.6606035513102279,
+    "auc_score": 0.6802815530901214,
+    "pr_auc": 0.5603911867722783,
+    "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/randomforest_50.parquet",
         "columns": [

@@ -3,26 +3,31 @@
     "model_name": "LOGISTIC_50",
     "experiment": {
         "comparison_axis": "feature_set",
-        "feature_set": "full"
+        "dataset": "50",
+        "feature_set": "pct50",
+        "excluded_feature": null,
+        "feature_count": 11
     },
-    "accuracy": 0.6575,
-    "precision": 0.5890611470745887,
-    "recall": 0.3704044594244231,
-    "f1_score": 0.4548175031437531,
-    "total_time_sec": 0.0049321669939672574,
-    "avg_latency_ms": 2.4660834969836288e-05,
+    "accuracy": 0.657365,
+    "precision": 0.5888652731062091,
+    "recall": 0.3699377754731657,
+    "f1_score": 0.4544072101336773,
+    "total_time_sec": 0.03997886400065909,
+    "avg_latency_ms": 0.00019989432000329542,
     "total_samples": 200000,
     "confusion_matrix": [
         [
-            102927,
-            19933
+            102936,
+            19924
         ],
         [
-            48567,
-            28573
+            48603,
+            28537
         ]
     ],
-    "auc_score": 0.6795904712109215,
+    "auc_score": 0.6796578649713586,
+    "pr_auc": 0.559125589874645,
+    "threshold": 0.5,
     "parquet": {
         "path": "data/results/roc/logistic_50.parquet",
         "columns": [

@@ -610,6 +610,11 @@ ls data/raw/gym_churn_1M_dataset.csv
 python src/environment/setup_python312_env.py
 
 # 5. 가상환경 활성화 (macOS/Linux)
+
+# WindowOS
+.venv\Scripts\activate
+
+#macOS
 source .venv/bin/activate
 
 # 6. 전처리 데이터 생성 (필요한 경우에만 실행)
@@ -628,8 +633,11 @@ streamlit run run.py
 python Viewer.py
 ```
 
-Windows에서는 5번 대신 아래 명령으로 가상환경을 활성화합니다.
 
-```powershell
-.venv\Scripts\activate
-```
+## 데이터 출처 및 라이선스                                                                                 
+- 데이터셋: `gym_churn_1M_dataset.csv`                                                                     
+- 출처: Kaggle (원본 URL 확인 필요)        
+- url : https://www.kaggle.com/datasets/adrianvinueza/gym-customers-features-and-churn
+- 사용 목적: 교육용 인공지능 프로젝트의 데이터 분석 및 모델 학습                                           
+- 라이선스: 원본 Kaggle 데이터셋의 라이선스를 따른다.                                                      
+- 주의: 데이터셋의 재배포 및 상업적 이용 가능 여부는 원본 Kaggle 페이지의 라이선스를 확인해야 한다. 
